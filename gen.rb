@@ -10,17 +10,19 @@ require 'rmagick'
 include Magick
 require 'shellwords'
 require 'prawn'
+
+load 't.rb'
+
 p ARGV.first
 
 output_dir = File.basename(ARGV[0].split('.').first)
 
 `mkdir #{Shellwords.escape(output_dir)}`
 
-FPS = 29.97
-
 SRT = ARGV.first + '.srt'
 
-#{}`shotdetect-cmd -f -l -i #{Shellwords.escape(ARGV.first)} -o . -s 90`
+`ffprobe -show_frames -of compact=p=0 -f lavfi "movie=#{ARGV.first},select=gt(scene\\,.3)" -pretty | grep -oE "pkt_pts_time\\=[^\\|]+" > subtimes.out`
+
 
 subtitles = File.open(SRT)
 
@@ -33,7 +35,8 @@ def parse_time(time)
 end
 
 def to_msec(s)
-  chunks = s.split(/:|,/).map(&:to_i)
+  chunks = s.split(/:|,|\./).map(&:to_i)
+  chunks << (chunks.pop / 1000).round
   msecs = chunks.pop
   chunks.reverse!
   chunks.each_with_index { |x,i| msecs += x.to_i * 60**i * 1000 }
@@ -71,88 +74,77 @@ while(!subtitles.eof? && line = subtitles.readline) do
     newsub = true
   end
 end
-
-p times.count
-#parse scene file
-f = File.open("result.xml")
-p f
-doc = Nokogiri::XML(f)
-doc.css('shot').each {|s| times << s['msbegin'].to_i }
-f.close
-
-times.sort!
-p times.count
-p times
-
-SS = 7000
-
-subtimes.reverse!
-subtitle_frame = 0
-last_frame = 0
-real_frame_count = 0
-
-times.each_with_index { |time, i|
-  last_frame = time
-  real_frame_count += 1
-  sub = false
-  while (!subtimes.empty? && time >= subtimes.last[1].to_i) do
-    #p "moving to the next frame."
-    subtitle_frame += 1
-    subtimes.pop
-  end
-  p subtimes.last
-  if(!subtimes.empty? && time < subtimes.last[0].to_i)
-    #p "this frame is before our next subtitle."
-  elsif(!subtimes.empty? && time >= subtimes.last[0].to_i && time <= subtimes.last[1].to_i)
-    p "valid subtitle/subtime found"
-    sub = true
-    #p "#{time}: #{subs[subtitle_frame].join(' | ')}"
-  else
-    p "What happened? #{time} #{subtimes.last}"
-  end
-  exit if real_frame_count > SS
-  offset = (time < 1000)  ? 0 : 1000
-  image_name = "#{output_dir}/%04d.jpg" % [real_frame_count]
-
-  `ffmpeg -ss #{to_ts(time, -offset)} -i #{Shellwords.escape(ARGV.first)} -vframes 1 -ss #{to_ts(0, offset)} #{Shellwords.escape(image_name)} >/dev/null 2>&1`
-
-  text = []
-  italic, bold, underline = false, false, false
-  p subtitle_frame
-  p subs[subtitle_frame]
-  if !subtimes.empty?
-    subs[subtitle_frame].each {|line|
-
-      if line.match(/<i>(.*)<\/i>/)
-       text << $1; italic = true
-      elsif line.match(/<b>(.*)<\/b>/)
-        text << $1; bold = true
-      else
-        text << line
-      end
-    }
-  end
-
-    img = ImageList.new(image_name)
-    img = img.resize_to_fit(640, 480)
-  if sub
-
-    txt = Draw.new
-    img.annotate(txt, 0,0,0,0, text.join("\n")){
-      txt.gravity = Magick::SouthGravity
-      txt.pointsize = 37
-      txt.stroke_width = 2
-      txt.stroke = "#000000"
-      txt.fill = "#ffffff"
-      txt.font_weight = Magick::BoldWeight
-      #txt.font_style = Magick::ItalicStyle
-    }
-  end
-    img.format = 'jpeg'
-    img.write(image_name) { self.quality = 50 }
+File.open('subtimes.out').each_line {|l|
+  times << to_msec(l.split('=').last)
 }
 
-`ruby pdf.rb #{Shellwords.escape(output_dir)}`
+times.sort!
 
-print "ruby epub.rb #{Shellwords.escape(output_dir)} out"
+SS = 1500
+
+real_frame_count = 0
+
+def render_frame(time, s, image_name)
+  offset = (time < 1000)  ? 0 : 1000
+    `ffmpeg -ss #{to_ts(time, -offset)} -i #{Shellwords.escape(ARGV.first)} -vframes 1 -ss #{to_ts(0, offset)} #{Shellwords.escape(image_name)} >/dev/null 2>&1`
+
+    text = []
+    italic, bold, underline = false, false, false
+    img = ImageList.new(image_name)
+    img = img.resize_to_fit(640, 480)
+
+    if s && !s.empty?
+      s.each {|line|
+        if line.match(/<i>(.*)<\/i>/)
+         text << $1; italic = true
+        elsif line.match(/<b>(.*)<\/b>/)
+          text << $1; bold = true
+        else
+          text << line
+        end
+      }
+      txt = Draw.new
+      img.annotate(txt, 0,0,0,0, s.join("\n")){
+        txt.gravity = Magick::SouthGravity
+        txt.pointsize = 40
+        txt.stroke_width = 2
+        txt.stroke = "#000000"
+        txt.fill = "#ffffff"
+        txt.font_weight = Magick::BoldWeight
+        #txt.font_style = Magick::ItalicStyle
+      }
+    end
+    img.format = 'jpeg'
+    img.write(image_name) { self.quality = 50 }
+end
+
+pool = Thread::Pool.new(8)
+times.each_with_index { |time, i|
+    last_frame = time
+
+    lines = nil
+    subtimes.each_with_index{|t,j|
+      lines = subs[j] if (time >= t.first && time <= t.last)
+    }
+
+    image_name = "#{output_dir}/%04d.jpg" % [i]
+
+    pool.process {
+      render_frame(time, lines, image_name)
+    }
+
+    pool.shutdown && exit if i > SS
+}
+
+t = Thread.new {
+  while(pool.backlog > 0)
+    sleep(1)
+    p pool.backlog
+  end
+}
+pool.shutdown
+
+t.join
+
+`ruby pdf.rb #{Shellwords.escape(output_dir)}`
 `ruby epub.rb #{Shellwords.escape(output_dir)} out`
