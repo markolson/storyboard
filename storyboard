@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'shellwords'
+require 'optparse'
+
+options = {}
+
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: run.rb [options] path"
+
+  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
+
+  opts.on("--mobi", "Generate longform .mobi file for Kindles") do |v|
+    options[:mobi] = v
+  end
+
+  opts.on("--epub", "Generate epub") do |v|
+    options[:mobi] = v
+  end
+
+   opts.on("--pdf", "Generate pdf") do |v|
+    options[:mobi] = v
+  end
+
+ opts.on_tail("-h", "--help", "Show this message") do
+        puts opts
+        exit
+      end
+
+end.parse!
+
+raise ArgumentError, "No files given!" unless ARGV.size > 0
+file = ARGV.shift
+
+output_dir = ARGV.shift
+
+basename = File.basename(file, ".*")
+p basename
+
+
+p output_dir
