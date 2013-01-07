@@ -19,9 +19,12 @@ output_dir = File.basename(ARGV[0].split('.').first)
 
 `mkdir #{Shellwords.escape(output_dir)}`
 
-SRT = ARGV.first + '.srt'
+FPS = 29.97
+`suby #{Shellwords.escape(ARGV.first)}`
 
-`ffprobe -show_frames -of compact=p=0 -f lavfi "movie=#{ARGV.first},select=gt(scene\\,.3)" -pretty | grep -oE "pkt_pts_time\\=[^\\|]+" > subtimes.out`
+SRT = File.basename(ARGV.first, '.*') + '.srt'
+
+`ffprobe -show_frames -of compact=p=0 -f lavfi "movie=#{ARGV.first},select=gt(scene\\,.35)" -pretty | grep -oE "pkt_pts_time\\=[^\\|]+" > subtimes.out`
 
 
 subtitles = File.open(SRT)
@@ -60,20 +63,29 @@ subtimes = []
 newsub = true
 
 #parse subtitle file
+
 while(!subtitles.eof? && line = subtitles.readline) do
+  line = line.strip
+  line.gsub!("\xEF\xBB\xBF".force_encoding("UTF-8"), '')
+
+  p "On #{line}"
+  p "linnee #{line} #{line.to_s.to_i} / #{subs.count}"
   if newsub && (line.to_i - 1 == subs.count)
+    p "newsub"
     newsub = false
     subs << []
   elsif times.count < subs.count && subs.last.empty?
-    subtimes << parse_time(line.strip)
-    times << parse_time(line.strip).first
-  elsif line.strip.length > 0
-    subs.last << line.strip
+    p "timer"
+    subtimes << parse_time(line)
+    times << parse_time(line).first
+  elsif line.length > 0
+    subs.last << line
     #p line.strip
   else
     newsub = true
   end
 end
+
 File.open('subtimes.out').each_line {|l|
   times << to_msec(l.split('=').last)
 }
@@ -95,6 +107,7 @@ def render_frame(time, s, image_name)
 
     if s && !s.empty?
       s.each {|line|
+
         if line.match(/<i>(.*)<\/i>/)
          text << $1; italic = true
         elsif line.match(/<b>(.*)<\/b>/)
@@ -103,10 +116,12 @@ def render_frame(time, s, image_name)
           text << line
         end
       }
+      maxsize = 37
       txt = Draw.new
+      txt.pointsize = maxsize
+
       img.annotate(txt, 0,0,0,0, s.join("\n")){
         txt.gravity = Magick::SouthGravity
-        txt.pointsize = 40
         txt.stroke_width = 2
         txt.stroke = "#000000"
         txt.fill = "#ffffff"
@@ -134,8 +149,11 @@ times.each_with_index { |time, i|
     }
 
     pool.shutdown && exit if i > SS
-}
+    #puts "ffmpegthumbnailer -t #{to_ts(time, 0)} -i #{Shellwords.escape(ARGV.first)} -o #{Shellwords.escape(image_name)} >/dev/null 2>&1"
+    #`ffmpegthumbnailer -t #{to_ts(time, 0)} -i #{Shellwords.escape(ARGV.first)} -o #{Shellwords.escape(image_name)} >/dev/null 2>&1`
 
+
+}
 t = Thread.new {
   while(pool.backlog > 0)
     sleep(1)
