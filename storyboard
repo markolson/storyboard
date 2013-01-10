@@ -4,42 +4,48 @@ require 'rubygems'
 require 'shellwords'
 require 'optparse'
 
-options = {}
+options = {:scenes => true, :verbose => true, :types => ['pdf']}
 
 
-OptionParser.new do |opts|
-  opts.banner = "Usage: run.rb [options] path"
+opts = OptionParser.new
+opts.banner = "Usage: storyboard [options] videofile [output_directory]"
 
-  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-    options[:verbose] = v
-  end
+opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+  options[:verbose] = v
+end
 
-  opts.on("--mobi", "Generate longform .mobi file for Kindles") do |v|
-    options[:mobi] = v
-  end
+opts.on("-s", "--[no-]scenes", "Detect scene changes. This increases the time it takes to generate a file.") do |v|
+  options[:scenes] = v
+end
 
-  opts.on("--epub", "Generate epub") do |v|
-    options[:mobi] = v
-  end
+opts.on("--make x,y,z", Array, "Filetypes to output", '(pdf, mobi, epub)') do |types|
+  options[:types] = types
+end
 
-   opts.on("--pdf", "Generate pdf") do |v|
-    options[:mobi] = v
-  end
+opts.on_tail("-h", "--help", "Show this message") do
+  puts opts
+  exit
+end
 
- opts.on_tail("-h", "--help", "Show this message") do
-        puts opts
-        exit
-      end
+begin opts.parse! ARGV
+rescue OptionParser::InvalidOption, OptionParser::InvalidArgument => e
+  puts e
+  puts opts
+  exit 1
+end
 
-end.parse!
+if ARGV.size < 1
+  puts "videofile required"
+  puts opts.to_s
+  exit 1
+end
 
-raise ArgumentError, "No files given!" unless ARGV.size > 0
 file = ARGV.shift
 
-output_dir = ARGV.shift
+output_dir = ARGV.shift || Dir.pwd
 
 basename = File.basename(file, ".*")
+
 p basename
-
-
 p output_dir
+
