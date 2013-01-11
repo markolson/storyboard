@@ -29,6 +29,7 @@ class Storyboard
       @pages = []
       parse
       clean_promos
+      LOG.info("Parsed subtitle file. #{count} entries found.")
     end
 
     #There are some horrid files, so I want to be able to have more than just a single regex
@@ -86,7 +87,7 @@ class Storyboard
        text
     end
 
-    def pages
+    def count
       @pages.count
     end
   end

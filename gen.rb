@@ -28,6 +28,7 @@ SRT = File.basename(ARGV.first, '.*') + '.srt'
 
 `ffprobe -show_frames -of compact=p=0 -f lavfi "movie=#{ARGV.first},select=gt(scene\\,.35)" -pretty | grep -oE "pkt_pts_time\\=[^\\|]+" > subtimes.out`
 
+Kernel.exec("ffprobe", %(movie=) "-show_frames")
 
 subtitles = File.open(SRT)
 

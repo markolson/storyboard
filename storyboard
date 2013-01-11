@@ -15,6 +15,9 @@ load 'lib/storyboard.rb'
 
 options = {:scenes => true, :verbose => true, :types => ['pdf'], :scene_threshold => 0.4}
 
+# think about them
+options[:consolidate_frame_threshold] = 0.4
+
 LOG = Logger.new(STDOUT)
 LOG.level = Logger::INFO
 
@@ -22,6 +25,7 @@ opts = OptionParser.new
 opts.banner = "Usage: storyboard [options] videofile [output_directory]"
 
 opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+  options[:version] = v
   LOG.level = Logger::DEBUG if v
 end
 
@@ -66,6 +70,6 @@ options[:basename] = File.basename(options[:file], ".*")
 
 options[:write_to] = File.join(output_dir,options[:basename])
 Dir.mkdir(options[:write_to]) unless File.directory?(options[:write_to])
-LOG.debug("setting base output path to #{options[:write_to]}")
+LOG.debug(options)
 
 Storyboard.new(options)
