@@ -1,3 +1,14 @@
+GIT
+  remote: http://github.com/markolson/suby
+  revision: f44e9821f0f6ff07d2729a3a0b3abc386861b9e9
+  specs:
+    suby (0.4.0)
+      mime-types (>= 1.19)
+      nokogiri
+      path (>= 1.3.0)
+      rubyzip
+      term-ansicolor
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -19,12 +30,6 @@ GEM
     rmagick (2.13.1)
     ruby-rc4 (0.1.5)
     rubyzip (0.9.9)
-    suby (0.4.0)
-      mime-types (>= 1.19)
-      nokogiri
-      path (>= 1.3.0)
-      rubyzip
-      term-ansicolor
     term-ansicolor (1.0.7)
     ttfunk (1.0.3)
 
@@ -35,4 +40,4 @@ DEPENDENCIES
   nokogiri
   prawn
   rmagick
-  suby
+  suby!

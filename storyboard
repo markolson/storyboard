@@ -3,19 +3,30 @@
 require 'rubygems'
 require 'shellwords'
 require 'optparse'
+require 'logger'
+require 'bundler/setup'
+Bundler.require(:default)
+
+load 'lib/storyboard.rb'
 
 options = {:scenes => true, :verbose => true, :types => ['pdf']}
 
+LOG = Logger.new(STDOUT)
+LOG.level = Logger::INFO
 
 opts = OptionParser.new
 opts.banner = "Usage: storyboard [options] videofile [output_directory]"
 
 opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-  options[:verbose] = v
+  LOG.level = Logger::DEBUG if v
 end
 
-opts.on("-s", "--[no-]scenes", "Detect scene changes. This increases the time it takes to generate a file.") do |v|
+opts.on("-c", "--[no-]scenes", "Detect scene changes. This increases the time it takes to generate a file.") do |v|
   options[:scenes] = v
+end
+
+opts.on("-s", "--subs FILE", "SRT subtitle file to use. Will skip extracting/downloading one.") do |s|
+  options[:subs] = s
 end
 
 opts.on("--make x,y,z", Array, "Filetypes to output", '(pdf, mobi, epub)') do |types|
@@ -40,12 +51,12 @@ if ARGV.size < 1
   exit 1
 end
 
-file = ARGV.shift
-
+options[:file] = File.realdirpath(ARGV.shift)
 output_dir = ARGV.shift || Dir.pwd
+options[:basename] = File.basename(options[:file], ".*")
 
-basename = File.basename(file, ".*")
+options[:write_to] = File.join(output_dir,options[:basename])
+Dir.mkdir(options[:write_to]) unless File.directory?(options[:write_to])
+LOG.debug("setting base output path to #{options[:write_to]}")
 
-p basename
-p output_dir
-
+Storyboard.new(options)

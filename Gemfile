@@ -1,6 +1,6 @@
 source :rubygems
 
 gem 'nokogiri'
-gem 'suby'
+gem 'suby', :git => 'http://github.com/markolson/suby', :require => 'suby'
 gem 'rmagick'
 gem 'prawn'

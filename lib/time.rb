@@ -1,26 +1,34 @@
-def parse_time(time)
-  #00:01:02,516 --> 00:01:05,326
-  r = time.scan(/(.*) --> (.*)/).first
-  [to_msec(r[0]), to_msec(r[1])]
-  #[r[0].sub(',','.'), r[1].sub(',','.')]
-end
+class STRTime
+  REGEX = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/
 
-def to_msec(s)
-  chunks = s.split(/:|,|\./).map(&:to_i)
-  chunks << (chunks.pop / 1000).round
-  msecs = chunks.pop
-  chunks.reverse!
-  chunks.each_with_index { |x,i| msecs += x.to_i * 60**i * 1000 }
-  msecs
-end
+  attr_reader :value
 
-def to_ts(ms, offset = 0)
-  ms = ms.to_i
-  _ms = ms + offset
-  h = (_ms / (60 * 60 * 1000)).to_i
-  m = (_ms / (60 * 1000)).to_i - (h * 60)
-  s = (_ms / (1000)).to_i - (m * 60)
-  _ms = (_ms / 1000.0).to_s.split('.').last.to_i
-  s = "%02d:%02d:%02d.%03d" % [h,m,s,_ms]
-  s
+  class <<self
+    def parse(str)
+      hh,mm,ss,ms = str.scan(REGEX).flatten.map{|i| Float(i)}
+      value = ((((hh*60)+mm)*60)+ss) + ms/1000
+      self.new(value)
+    end
+  end
+
+  def initialize(value)
+    @value = value
+  end
+
+  def +(bump)
+    STRTime.new(@value + bump)
+  end
+
+  def to_srt
+    ss = @value.floor
+    ms = ((@value - ss)*1000).to_i
+
+    mm = ss / 60
+    ss = ss - mm * 60
+
+    hh = mm / 60
+    mm = mm - hh * 60
+
+    "%02i:%02i:%02i,%03i" % [hh, mm, ss, ms]
+  end
 end
