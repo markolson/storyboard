@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+#http://archive.org/details/RvsB_E05
+
 require 'rubygems'
 require 'shellwords'
 require 'optparse'
@@ -7,9 +9,11 @@ require 'logger'
 require 'bundler/setup'
 Bundler.require(:default)
 
+
+require 'open3'
 load 'lib/storyboard.rb'
 
-options = {:scenes => true, :verbose => true, :types => ['pdf']}
+options = {:scenes => true, :verbose => true, :types => ['pdf'], :scene_threshold => 0.4}
 
 LOG = Logger.new(STDOUT)
 LOG.level = Logger::INFO
@@ -23,6 +27,10 @@ end
 
 opts.on("-c", "--[no-]scenes", "Detect scene changes. This increases the time it takes to generate a file.") do |v|
   options[:scenes] = v
+end
+
+opts.on("-ct", Float, "Scene detection threshold. 0.2 is too low, 0.8 is too high. Play with it!") do |f|
+  options[:scene_threshold] = f
 end
 
 opts.on("-s", "--subs FILE", "SRT subtitle file to use. Will skip extracting/downloading one.") do |s|
@@ -52,6 +60,7 @@ if ARGV.size < 1
 end
 
 options[:file] = File.realdirpath(ARGV.shift)
+
 output_dir = ARGV.shift || Dir.pwd
 options[:basename] = File.basename(options[:file], ".*")
 

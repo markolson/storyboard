@@ -21,9 +21,10 @@ class Storyboard
     Page = Struct.new(:index, :start_time, :end_time, :lines)
 
     TIME_REGEX = /\d{2}:\d{2}:\d{2},\d{3}/
-    attr_accessor :text, :pages
+    attr_accessor :text, :pages, :options
 
-    def initialize(contents)
+    def initialize(contents, parent_options)
+      @options = parent_options
       @text = contents
       @pages = []
       parse
@@ -72,6 +73,13 @@ class Storyboard
         !page[:lines].grep(/Subtitles downloaded/).empty? ||
         false
       }
+    end
+
+    def save
+      File.open(File.join(options[:write_to], options[:basename] + '.srt'), 'w') {|f|
+        f.write(self.to_s)
+      }
+      self
     end
 
     def to_s
