@@ -17,6 +17,7 @@ options = {:scenes => true, :verbose => true, :types => ['pdf'], :scene_threshol
 
 # think about them
 options[:consolidate_frame_threshold] = 0.4
+options[:max_width] = 600
 
 LOG = Logger.new(STDOUT)
 LOG.level = Logger::INFO

@@ -17,11 +17,11 @@ class Storyboard
     @subtitles.save if options[:verbose]
 
     @capture_points = []
-    #run_scene_detection if options[:scenes]
+    run_scene_detection if options[:scenes]
 
     consolidate_frames
 
-    #extract_screenshots
+    extract_screenshots
 
     render_output
   end
@@ -59,7 +59,7 @@ class Storyboard
     LOG.debug("Removed #{removed} frames that were within the consolidate_frame_threshold of #{options[:consolidate_frame_threshold]}")
   end
 
-  def extract_screenshots
+  def render_output
     pool = Thread::Pool.new(8)
     pbar = ProgressBar.create(:title => " Extracting Frames", :format => '%t [%c/%C|%B] %e', :total => @capture_points.count)
     save_directory = File.join(options[:write_to], 'raw_frames')
@@ -79,11 +79,7 @@ class Storyboard
     }
     pool.shutdown
     LOG.info("Finished Extracting Frames")
-  end
-
-  def render_output
     Storyboard::PDFRenderer.render(self,nil) if options[:types].include?('pdf')
-
   end
 
   def check_video
