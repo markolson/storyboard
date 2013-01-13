@@ -27,8 +27,8 @@ class Storyboard
 
     @renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
 
-    #check_video
-    #run_scene_detection if options[:scenes]
+    check_video
+    run_scene_detection if options[:scenes]
     consolidate_frames
     extract_frames
     render_output
