@@ -9,7 +9,6 @@ class Storyboard
       #but "file" has to be a "Path", so, whatever.
       suby_file = Path(options[:file])
       downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
-      p downloader.video_data
       LOG.debug("Found #{downloader.download_url}")
       downloader.extract(downloader.download_url)
     end
@@ -72,6 +71,7 @@ class Storyboard
       @pages.delete_if {|page|
         !page[:lines].grep(/Subtitles downloaded/).empty? ||
         !page[:lines].grep(/addic7ed/).empty? ||
+        !page[:lines].grep(/OpenSubtitles/).empty? ||
         false
       }
     end
