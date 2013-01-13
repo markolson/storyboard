@@ -23,7 +23,7 @@ Any subtitle file has to be in SRT format.
 
 ## Requirements
 
-Storyboard requires a recent version of *ffmpeg*. This gem includes a build of *ffprobe* that will only work on OS X 1.8, 64 bit. It's probably best not to use this on any different system for now.
+Storyboard requires a recent version of *ffmpeg*. This gem includes a build of *ffprobe* that will only work on OS X 1.8, 64 bit. It's probably best not to use this on any different system for now. It's also best to run it on something with at least 8 cores.
 
 ## Known Issues
 

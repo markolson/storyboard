@@ -77,7 +77,7 @@ class Storyboard
     end
 
     def save
-      File.open(File.join(options[:write_to], options[:basename] + '.srt'), 'w') {|f|
+      File.open(File.join(options[:work_dir], options[:basename] + '.srt'), 'w') {|f|
         f.write(self.to_s)
       }
       self

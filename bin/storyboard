@@ -74,7 +74,8 @@ options[:file] = File.realdirpath(ARGV.shift)
 output_dir = ARGV.shift || Dir.pwd
 options[:basename] = File.basename(options[:file], ".*")
 
-options[:write_to] = File.join(output_dir,options[:basename])
+options[:write_to] = output_dir #File.join(output_dir,options[:basename])
+options[:work_dir] = Dir.mktmpdir
 Dir.mkdir(options[:write_to]) unless File.directory?(options[:write_to])
 LOG.debug(options)
 

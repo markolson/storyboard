@@ -17,7 +17,7 @@ class Storyboard
     @renderers = []
     @options = o
 
-    @options[:save_directory] = File.join(o[:write_to], 'raw_frames')
+    @options[:save_directory] = File.join(o[:work_dir], 'raw_frames')
 
     Dir.mkdir(@options[:save_directory]) unless File.directory?(@options[:save_directory])
 
