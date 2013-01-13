@@ -72,6 +72,7 @@ class Storyboard
         !page[:lines].grep(/Subtitles downloaded/).empty? ||
         !page[:lines].grep(/addic7ed/).empty? ||
         !page[:lines].grep(/OpenSubtitles/).empty? ||
+        !page[:lines].grep(/sync, corrected by/).empty? ||
         false
       }
     end

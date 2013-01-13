@@ -3,3 +3,4 @@ passing in a directory instead of a file
 error messages
 extract subtitles from the files
 imdb subtitles
+#{filename}.srt and #{File.basename(filename,".*")}.srt checks

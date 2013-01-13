@@ -37,7 +37,7 @@ class Storyboard
   def run_scene_detection
     LOG.info("Scanning for scene changes. This may take a moment.")
     pbar = ProgressBar.create(:title => " Analyzing Video", :format => '%t [%B] %e', :total => @length, :smoothing => 0.6)
-    bin = File.join(File.dirname(__FILE__), '../bin/ffprobe')
+    bin = File.join(File.dirname(__FILE__), '../bin/storyboard-ffprobe')
     Open3.popen3(bin, "-show_frames", "-of", "compact=p=0", "-f", "lavfi", %(movie=#{options[:file]},select=gt(scene\\,.30)), "-pretty") {|stdin, stdout, stderr, wait_thr|
         begin
           # trolololol
