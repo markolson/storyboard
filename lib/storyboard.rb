@@ -1,28 +1,33 @@
 load 'lib/subtitles.rb'
 load 'lib/thread-util.rb'
 
+load 'lib/generators/sub.rb'
 load 'lib/generators/pdf.rb'
 
 require 'mime/types'
 
 class Storyboard
   attr_accessor :options, :capture_points, :subtitles, :timings
-  attr_accessor :length
+  attr_accessor :length, :renderers
 
   def initialize(o)
+    @capture_points = []
+    @renderers = []
     @options = o
-    check_video
+
+    @options[:save_directory] = File.join(o[:write_to], 'raw_frames')
+    Dir.mkdir(@options[:save_directory]) unless File.directory?(@options[:save_directory])
+
     @subtitles = SRT.new(options[:subs] ? File.read(options[:subs]) : get_subtitles, options)
     # temp hack so I don't have to wait all the time.
     @subtitles.save if options[:verbose]
 
-    @capture_points = []
+    @renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
+
+    check_video
     run_scene_detection if options[:scenes]
-
     consolidate_frames
-
-    extract_screenshots
-
+    extract_frames
     render_output
   end
 
@@ -59,15 +64,16 @@ class Storyboard
     LOG.debug("Removed #{removed} frames that were within the consolidate_frame_threshold of #{options[:consolidate_frame_threshold]}")
   end
 
-  def render_output
+  def extract_frames
     pool = Thread::Pool.new(8)
     pbar = ProgressBar.create(:title => " Extracting Frames", :format => '%t [%c/%C|%B] %e', :total => @capture_points.count)
-    save_directory = File.join(options[:write_to], 'raw_frames')
-    Dir.mkdir(save_directory) unless File.directory?(save_directory)
+
     @capture_points.each_with_index {|f,i|
+      # It's *massively* quicker to jump to a bit before where we want to be, and then make the incrimental jump to
+      # exactly where we want to be.
       seek_primer = (f.value < 1.000)  ? 0 : -1.000
       # should make Frame a struct with idx and subs
-      image_name = File.join(save_directory, "%04d.jpg" % [i])
+      image_name = File.join(@options[:save_directory], "%04d.jpg" % [i])
       pool.process {
         pbar.increment
         cmd = ["ffmpeg", "-ss", (f + seek_primer).to_srt, "-i", %("#{options[:file]}"), "-vframes 1", "-ss", STRTime.new(seek_primer.abs).to_srt, %("#{image_name}")].join(' ')
@@ -79,7 +85,25 @@ class Storyboard
     }
     pool.shutdown
     LOG.info("Finished Extracting Frames")
-    Storyboard::PDFRenderer.render(self,nil) if options[:types].include?('pdf')
+
+  end
+
+  def render_output
+    LOG.info("Rendering output files")
+    pbar = ProgressBar.create(:title => " Rendering Output", :format => '%t [%c/%C|%B] %e', :total => @capture_points.count)
+    @capture_points.each_with_index {|f,i|
+      image_name = File.join(@options[:save_directory], "%04d.jpg" % [i])
+      capture_point_subtitles = @subtitles.pages.select { |page| f.value >=  page.start_time.value and f.value <= page.end_time.value }.first
+      begin
+        @renderers.each{|r| r.render_frame(image_name, capture_point_subtitles) }
+      rescue
+        p $!
+      end
+      pbar.increment
+    }
+
+    @renderers.each {|r| r.write }
+    LOG.info("Finished Rendering Output files")
   end
 
   def check_video

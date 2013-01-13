@@ -9,9 +9,6 @@
 #++
 
 require 'thread'
-
-p "hello"
-
 class Thread::Pool
   class Task
     Timeout = Class.new(Exception)

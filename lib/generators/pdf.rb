@@ -4,78 +4,43 @@ require 'rmagick'
 include Magick
 
 class Storyboard
-  class PDFRenderer
-    def self.render_frame(storyboard, frame)
+  class PDFRenderer < Storyboard::Renderer
 
-      save_directory = File.join(storyboard.options[:write_to], 'raw_frames')
-      storyboard.capture_points.each_with_index {|x,i|
-        #p x.value
-        image_name = File.join(save_directory, "%04d.jpg" % [i])
-        img = ImageList.new(image_name)
-        resize_height = (img.rows * (storyboard.options[:max_width].to_f/img.columns)).ceil
-        img = img.resize_to_fit(storyboard.options[:max_width], resize_height)
-        #p "========================================"
-        #p img
-        txt = nil
-        # Find any subtitles that go with this frame.
-        storyboard.subtitles.pages.each {|page|
-          if txt.nil? && x.value >=  page.start_time.value and x.value <= page.end_time.value
-            txtwidth = img.columns + 1
-            txtsize = 29
-            while(txtwidth > (img.columns * 0.8))
-              txtsize -= 1
-              txt = Draw.new
-              txt.pointsize = txtsize
-              o = txt.get_multiline_type_metrics(img, page.lines.join("\n"))
-              txtwidth = o.width
-              #p o
-            end
-            txt.gravity = Magick::SouthGravity
-            txt.stroke_width = 1
-            txt.stroke = 'transparent'
-            txt.font_weight = Magick::BoldWeight
-
-            img.annotate(txt, 0,0,-2,-2, page.lines.join("\n")) {
-              txt.fill = '#333333'
-            }
-
-            img.annotate(txt, 0,0,0,0, page.lines.join("\n")){
-              txt.fill = "#ffffff"
-              txt.stroke = "#000000"
-              #txt.font_style = Magick::ItalicStyle
-            }
-            #p page.lines.join(" | ")
-            #.gsub(%r{</?[^>]+?>}, '')
-            #p "Got subtitle for frame #{i}; #{x.value}, #{page.start_time.value}, #{page.end_time.value}"
-          end
-
-        } #end subtitle loop
-        if txt.nil?
-          #p "OH NO #{i}"
-          #exit
-        end
-        img.format = 'jpeg'
-        img.write(File.join(save_directory, "sub-%04d.jpg" % [i])) { self.quality = 50 }
-
-      } # end storyboard loop
+    attr_accessor :pdf, :storyboard, :dimensions
+    def initialize(parent)
+      @dimensions = []
+      @storyboard = parent
     end
 
-    def add_subtitle(frame)
-
+    def set_dimensions(w,h)
+      @dimensions = [w,h]
+      @pdf = Prawn::Document.new(:page_size => [w, h], :margin => 0)
     end
+
+    def write
+      @pdf.render_file "#{@storyboard.options[:write_to]}/out.pdf"
+      LOG.info("Wrote #{@storyboard.options[:write_to]}/out.pdf")
+    end
+
+    def render_frame(frame_name, subtitle = nil)
+      image_output = File.join(@storyboard.options[:save_directory], "sub-#{File.basename(frame_name)}")
+      img = ImageList.new(frame_name)
+
+      if(@dimensions.empty?)
+        resize_height = (img.rows * (@storyboard.options[:max_width].to_f/img.columns)).ceil
+        set_dimensions(storyboard.options[:max_width], resize_height)
+      end
+
+      img.resize_to_fit!(@dimensions[0], @dimensions[1])
+
+      self.add_subtitle(img, subtitle) if subtitle
+
+      img.format = 'jpeg'
+      img.write(image_output) { self.quality = 50 }
+      img.destroy!
+      #p "#{@dimensions[0]}x#{@dimensions[1]}"
+      @pdf.image image_output, :width => @dimensions[0], :height => @dimensions[1]
+    end
+
   end
 end
-=begin
-image_path = ARGV[0]
-
-
-p image_path
-
-pdf = Prawn::Document.new(:page_size => [640, 480], :margin => 0)
-  Dir["#{image_path}/*.jpg"].each {|i|
-    p i
-    pdf.image i, :height => 480, :width => 640
-  }
-
- pdf.render_file "#{image_path}.pdf"
-=end

@@ -62,7 +62,7 @@ class Storyboard
             phase = :line_no
             @pages << page
           else
-            page[:lines] << l
+            page[:lines] << l.gsub(%r{</?[^>]+?>}, '')
           end
         end
       }
