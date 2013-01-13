@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "Storyboard"
-  gem.require_paths = ["lib"]
+  gem.require_paths = ["lib","vendor/suby"]
   gem.version       = Storyboard::VERSION
 
   gem.add_dependency 'nokogiri'

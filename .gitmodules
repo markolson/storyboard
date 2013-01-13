@@ -1,0 +1,3 @@
+[submodule "vendor/suby"]
+	path = vendor/suby
+	url = http://github.com/markolson/suby
