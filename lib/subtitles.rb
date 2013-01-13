@@ -20,7 +20,7 @@ class Storyboard
   class SRT
     Page = Struct.new(:index, :start_time, :end_time, :lines)
 
-    TIME_REGEX = /\d{2}:\d{2}:\d{2},\d{3}/
+    TIME_REGEX = /\d{2}:\d{2}:\d{2}[,\.]\d{1,4}/
     attr_accessor :text, :pages, :options
 
     def initialize(contents, parent_options)
@@ -34,20 +34,20 @@ class Storyboard
 
     #There are some horrid files, so I want to be able to have more than just a single regex
     #to parse the srt file. Eventually, handling these errors will be a thing to do.
-    #There's also some files with UTF8 BOM markers that should be handled, but wtf.
-    #And and and badly encoded UTF8.
     def parse
       phase = :line_no
       page = nil
       @text.each_line {|l|
         l = l.strip
+        # Some files have BOM markers. Why? Why would you add a BOM marker.
+        l.gsub!("\xEF\xBB\xBF".force_encoding("UTF-8"), '') if page.nil?
         case phase
         when :line_no
           if l =~ /^\d+$/
             page = Page.new(@pages.count + 1, nil, nil, [])
             phase = :time
           elsif !l.empty?
-            raise "Bad SRT File: Should have a block number but got '#{l}'"
+            raise "Bad SRT File: Should have a block number but got '#{l}' [#{l.bytes.to_a.join(',')}]"
           end
         when :time
           if l =~ /^(#{TIME_REGEX}) --> (#{TIME_REGEX})$/
@@ -72,6 +72,7 @@ class Storyboard
     def clean_promos
       @pages.delete_if {|page|
         !page[:lines].grep(/Subtitles downloaded/).empty? ||
+        !page[:lines].grep(/addic7ed/).empty? ||
         false
       }
     end

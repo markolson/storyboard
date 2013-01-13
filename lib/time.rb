@@ -1,14 +1,9 @@
 class STRTime
-  REGEX = /(\d{1,2}):(\d{1,2}):(\d{2})[,\.](\d{3})/
+  REGEX = /(\d{1,2}):(\d{1,2}):(\d{2})[,\.](\d{1,3})/
 
   attr_reader :value
 
   class <<self
-    def from_ms(ms)
-
-    end
-
-
     def parse(str)
       hh,mm,ss,ms = str.scan(REGEX).flatten.map{|i| Float(i)}
       value = ((((hh*60)+mm)*60)+ss) + ms/1000

@@ -1,10 +1,13 @@
 load 'lib/subtitles.rb'
 load 'lib/thread-util.rb'
 
+load 'lib/generators/pdf.rb'
+
 require 'mime/types'
 
 class Storyboard
-  attr_accessor :options, :capture_points, :subtitles, :frames
+  attr_accessor :options, :capture_points, :subtitles, :timings
+  attr_accessor :length
 
   def initialize(o)
     @options = o
@@ -14,22 +17,28 @@ class Storyboard
     @subtitles.save if options[:verbose]
 
     @capture_points = []
-    run_scene_detection if options[:scenes]
+    #run_scene_detection if options[:scenes]
 
     consolidate_frames
 
-    extract_screenshots
+    #extract_screenshots
+
+    render_output
   end
 
   def run_scene_detection
     LOG.info("Scanning for scene changes. This may take a moment.")
-    Open3.popen3("ffprobe", "-show_frames", "-of", "compact=p=0", "-f", "lavfi", %(movie=#{options[:file]},select=gt(scene\\,.35)), "-pretty") {|stdin, stdout, stderr, wait_thr|
-       stdout.readlines.each {|line|
+    pbar = ProgressBar.create(:title => " Analyzing Video", :format => '%t [%B] %e', :total => @length, :smoothing => 0.6)
+    Open3.popen3("ffprobe", "-show_frames", "-of", "compact=p=0", "-f", "lavfi", %(movie=#{options[:file]},select=gt(scene\\,.30)), "-pretty") {|stdin, stdout, stderr, wait_thr|
+        begin
           # trolololol
-          o = line.split('|').inject({}){|hold,value| s = value.split('='); hold[s[0]]=s[1]; hold }
-          @capture_points << STRTime.parse(o['pkt_pts_time'])
-        }
+          o = stdout.gets.split('|').inject({}){|hold,value| s = value.split('='); hold[s[0]]=s[1]; hold }
+          t = STRTime.parse(o['pkt_pts_time'])
+          pbar.progress = t.value
+          @capture_points << t
+        end while !stdout.eof?
     }
+    pbar.finish
     LOG.info("#{@capture_points.count} scenes registered")
   end
 
@@ -53,33 +62,34 @@ class Storyboard
   def extract_screenshots
     pool = Thread::Pool.new(8)
     pbar = ProgressBar.create(:title => " Extracting Frames", :format => '%t [%c/%C|%B] %e', :total => @capture_points.count)
-    #pbar.long_running
-    #pbar.format = "%-20s %3d%% %s %s"
     save_directory = File.join(options[:write_to], 'raw_frames')
     Dir.mkdir(save_directory) unless File.directory?(save_directory)
-    @frames = []
     @capture_points.each_with_index {|f,i|
-
       seek_primer = (f.value < 1.000)  ? 0 : -1.000
       # should make Frame a struct with idx and subs
       image_name = File.join(save_directory, "%04d.jpg" % [i])
       pool.process {
         pbar.increment
-        #p "Writing #{image_name}"
         cmd = ["ffmpeg", "-ss", (f + seek_primer).to_srt, "-i", %("#{options[:file]}"), "-vframes 1", "-ss", STRTime.new(seek_primer.abs).to_srt, %("#{image_name}")].join(' ')
         Open3.popen3(cmd){|stdin, stdout, stderr, wait_thr|
+          # block the output so it doesn't quit immediately
           stdout.readlines
-          #p stderr.readlines
         }
       }
     }
     pool.shutdown
-    pbar.clear
     LOG.info("Finished Extracting Frames")
+  end
+
+  def render_output
+    Storyboard::PDFRenderer.render(self,nil) if options[:types].include?('pdf')
+
   end
 
   def check_video
     LOG.debug MIME::Types.type_for(options[:file])
+    @length = `ffmpeg -i "#{options[:file]}" 2>&1 | grep "Duration" | cut -d ' ' -f 4 | sed s/,//`
+    @length = STRTime.parse(length.strip+'0').value
   end
 
 end
