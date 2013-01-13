@@ -1,5 +1,3 @@
-load 'lib/time.rb'
-
 class Storyboard
   def get_subtitles
     if false == "the file has subtitles embedded"
@@ -11,6 +9,7 @@ class Storyboard
       #but "file" has to be a "Path", so, whatever.
       suby_file = Path(options[:file])
       downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
+      p downloader.video_data
       LOG.debug("Found #{downloader.download_url}")
       downloader.extract(downloader.download_url)
     end

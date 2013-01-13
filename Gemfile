@@ -1,5 +1,7 @@
 source :rubygems
 
+gemspec
+
 gem 'nokogiri'
 gem 'suby', :git => 'http://github.com/markolson/suby', :require => 'suby'
 gem 'rmagick'

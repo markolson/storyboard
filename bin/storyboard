@@ -1,17 +1,17 @@
 #!/usr/bin/env ruby
 
-#http://archive.org/details/RvsB_E05
+
 
 require 'rubygems'
 require 'shellwords'
 require 'optparse'
 require 'logger'
+require 'open3'
 require 'bundler/setup'
 Bundler.require(:default)
 
-
-require 'open3'
-load 'lib/storyboard.rb'
+$LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
+require 'storyboard'
 
 options = {:scenes => true, :verbose => true, :types => ['pdf'], :scene_threshold => 0.4}
 

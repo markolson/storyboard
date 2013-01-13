@@ -9,6 +9,15 @@ GIT
       rubyzip
       term-ansicolor
 
+PATH
+  remote: .
+  specs:
+    storyboard (0.0.1)
+      nokogiri
+      prawn
+      rmagick
+      ruby-progressbar
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -42,4 +51,5 @@ DEPENDENCIES
   prawn
   rmagick
   ruby-progressbar
+  storyboard!
   suby!

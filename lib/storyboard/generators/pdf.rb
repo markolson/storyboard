@@ -18,8 +18,8 @@ class Storyboard
     end
 
     def write
-      @pdf.render_file "#{@storyboard.options[:write_to]}/out.pdf"
-      LOG.info("Wrote #{@storyboard.options[:write_to]}/out.pdf")
+      @pdf.render_file "#{@storyboard.options[:write_to]}/#{@storyboard.options[:basename]}.pdf"
+      LOG.info("Wrote #{@storyboard.options[:write_to]}/#{@storyboard.options[:basename]}.pdf")
     end
 
     def render_frame(frame_name, subtitle = nil)
@@ -36,9 +36,9 @@ class Storyboard
       self.add_subtitle(img, subtitle) if subtitle
 
       img.format = 'jpeg'
-      img.write(image_output) { self.quality = 50 }
+      img.write(image_output) { self.quality = 60 }
       img.destroy!
-      #p "#{@dimensions[0]}x#{@dimensions[1]}"
+
       @pdf.image image_output, :width => @dimensions[0], :height => @dimensions[1]
     end
 

@@ -1,8 +1,11 @@
-load 'lib/subtitles.rb'
-load 'lib/thread-util.rb'
+require 'storyboard/subtitles.rb'
+require 'storyboard/thread-util.rb'
+require 'storyboard/time.rb'
+require 'storyboard/version.rb'
 
-load 'lib/generators/sub.rb'
-load 'lib/generators/pdf.rb'
+require 'storyboard/generators/sub.rb'
+require 'storyboard/generators/pdf.rb'
+
 
 require 'mime/types'
 
@@ -22,13 +25,13 @@ class Storyboard
     # temp hack so I don't have to wait all the time.
     @subtitles.save if options[:verbose]
 
-    @renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
+    #@renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
 
-    check_video
-    run_scene_detection if options[:scenes]
-    consolidate_frames
-    extract_frames
-    render_output
+    #check_video
+    #run_scene_detection if options[:scenes]
+    #consolidate_frames
+    #extract_frames
+    #render_output
   end
 
   def run_scene_detection
