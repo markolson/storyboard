@@ -4,6 +4,8 @@ Read the TV and Movies you don't have time to watch.
 
 ## Storyboard
 
+![Seinfeld](http://i.imgur.com/lTRuC.jpg)
+
 Storyboard is _very much_ a work in progress, and only works (most of) some of the time. Using it is simple:
 
     storyboard /path/to/video-file.mkv
@@ -29,11 +31,12 @@ Storyboard requires a recent version of *ffmpeg*. This gem includes a build of *
 
 * If there is a scene change followed by dialog in the next frame or two, the dialog may not be shown.
 * Subtitles are always downloaded, never extracted from video files. Because the subtitles are searched for based on the filename it's best that you have then named in a standard format, e.g., `The X-Files - 1x21 - Tooms.avi`.
-* Sometimes the wrong subtitle file will be returned from the site. In those cases, download it manually and use the `-s` option to pass in the path to an SRT formatted subtitle file.
-* Some subtitles are encoded in UTF-16, and I haven't care quite enough yet to get them to work.
+* Sometimes the wrong subtitle file will be returned from the site. In those cases, download it manually and use the `-s` option to pass in the path to an SRT formatted subtitle file. This is because the data lies, and there's nothing I can do about it.
+* Some subtitles are encoded in UTF-16, and I haven't care quite enough yet to get them to work. Others use bad UTF8.
 * The subtitles are uuuuuugly.
 * Hardcoding 8 for the number of threads is a bad idea
 * Almost definitely some path-escaping issues, so avoid files with apostrophes and slashes
+* Some subtitles put all the text on one line, so that has to get broken up.
 
 ## Help
 
