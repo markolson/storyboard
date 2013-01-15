@@ -1,6 +1,26 @@
 GIT
-  remote: http://github.com/markolson/suby
-  revision: f44e9821f0f6ff07d2729a3a0b3abc386861b9e9
+  remote: https://github.com/nddrylliog/tvdb_party
+  revision: 60ce3c28e664078da0206075e025ee06547f5826
+  specs:
+    tvdb_party (0.6.2)
+      httparty (>= 0.6.1)
+
+PATH
+  remote: .
+  specs:
+    storyboard (0.2.3)
+      levenshtein-ffi
+      mime-types (>= 1.19)
+      nokogiri
+      path (>= 1.3.0)
+      prawn
+      rmagick
+      ruby-progressbar
+      rubyzip
+      term-ansicolor
+
+PATH
+  remote: vendor/suby
   specs:
     suby (0.4.0)
       mime-types (>= 1.19)
@@ -9,22 +29,22 @@ GIT
       rubyzip
       term-ansicolor
 
-PATH
-  remote: .
-  specs:
-    Storyboard (0.1.1)
-      nokogiri
-      prawn
-      rmagick
-      ruby-progressbar
-
 GEM
   remote: http://rubygems.org/
   specs:
     Ascii85 (1.0.2)
     afm (0.2.0)
+    ffi (1.1.5)
     hashery (2.1.0)
+    httparty (0.10.0)
+      multi_json (~> 1.0)
+      multi_xml
+    levenshtein-ffi (1.0.3)
+      ffi
+      ffi (~> 1.1.5)
     mime-types (1.19)
+    multi_json (1.5.0)
+    multi_xml (0.5.2)
     nokogiri (1.5.6)
     path (1.3.1)
     pdf-reader (1.3.0)
@@ -47,9 +67,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  Storyboard!
+  levenshtein-ffi
   nokogiri
   prawn
   rmagick
   ruby-progressbar
+  rubyzip
+  storyboard!
   suby!
+  tvdb_party!

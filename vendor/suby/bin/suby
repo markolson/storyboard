@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/suby'
+require 'optparse'
+
+options = {}
+option_parser = OptionParser.new do |opts|
+  opts.banner = "#{File.basename $0} [options] video"
+  opts.separator '  Find and download subtitles for the given video file'
+  opts.separator "\nOptions:"
+
+  opts.on '-l', '--lang LANG = en', 'Lang for subtitles' do |lang|
+    options[:lang] = lang
+  end
+
+  opts.on '-f', '--force', 'Force subtitles download even if already exists' do |lang|
+    options[:force] = true
+  end
+
+  opts.on '-h', '--help', 'Show usage' do
+    puts opts
+    exit
+  end
+end
+
+option_parser.parse!
+
+puts option_parser if ARGV.empty?
+
+Suby.download_subtitles ARGV, options
