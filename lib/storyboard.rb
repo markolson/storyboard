@@ -1,4 +1,5 @@
 require 'storyboard/subtitles.rb'
+require 'storyboard/bincheck.rb'
 require 'storyboard/thread-util.rb'
 require 'storyboard/time.rb'
 require 'storyboard/version.rb'

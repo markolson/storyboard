@@ -18,6 +18,11 @@ require 'ruby-progressbar'
 $LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
 require 'storyboard'
 
+unless Storyboard.ffprobe_installed?
+  puts "Storyboard requires that ffmpeg 1.1 and ffprobe 1.1 are installed. Please check the README for instructions"
+  exit
+end
+
 options = {:scenes => true, :verbose => true, :types => ['pdf'], :scene_threshold => 0.4}
 
 # think about them

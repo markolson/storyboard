@@ -1,5 +1,14 @@
 class Storyboard
   def get_subtitles
+    extensionless = File.join(File.dirname(options[:file]), File.basename(options[:file], ".*") + '.srt')
+    extensioned = options[:file] + '.srt'
+    if File.exists?(options[:file] + '.srt')
+      return File.read(options[:file] + '.srt')
+    elsif File.exists?(extensionless)
+     return File.read(extensionless)
+    end
+    exit
+
     if false == "the file has subtitles embedded"
 
     else
