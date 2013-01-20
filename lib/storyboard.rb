@@ -38,7 +38,7 @@ class Storyboard
     LOG.info("Scanning for scene changes. This may take a moment.")
     pbar = ProgressBar.create(:title => " Analyzing Video", :format => '%t [%B] %e', :total => @length, :smoothing => 0.6)
     bin = File.join(File.dirname(__FILE__), '../bin/storyboard-ffprobe')
-    Open3.popen3(bin, "-show_frames", "-of", "compact=p=0", "-f", "lavfi", %(movie=#{options[:file]},select=gt(scene\\,.30)), "-pretty") {|stdin, stdout, stderr, wait_thr|
+    Open3.popen3('ffprobe', "-show_frames", "-of", "compact=p=0", "-f", "lavfi", %(movie=#{options[:file]},select=gt(scene\\,.30)), "-pretty") {|stdin, stdout, stderr, wait_thr|
         begin
           # trolololol
           o = stdout.gets.split('|').inject({}){|hold,value| s = value.split('='); hold[s[0]]=s[1]; hold }
@@ -69,7 +69,7 @@ class Storyboard
   end
 
   def extract_frames
-    pool = Thread::Pool.new(8)
+    pool = Thread::Pool.new(4)
     pbar = ProgressBar.create(:title => " Extracting Frames", :format => '%t [%c/%C|%B] %e', :total => @capture_points.count)
 
     @capture_points.each_with_index {|f,i|

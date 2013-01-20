@@ -37,20 +37,9 @@ module Suby
           break subs
         end
       }
-      x = s.select { |t| t['SeriesSeason'].to_i == @video_data[:season].to_i } if @video_data[:season]
-      x.each {|t|
-        puts t['MovieName'] + '/' + "\"#{@video_data[:show]}\" #{@video_data[:title]}" + " - " + Levenshtein.distance(t['MovieName'], "\"#{@video_data[:show]}\" #{@video_data[:title]}").to_i.to_s
-      }
+      x = @video_data[:season] ? s.select { |t| t['SeriesSeason'].to_i == @video_data[:season].to_i } : s
       x.sort_by! { |t| Levenshtein.distance(t['MovieName'], "\"#{@video_data[:show]}\" #{@video_data[:title]}").to_i }
-      p "|||||||||||||||"
-      x.each {|t|
-        puts t['MovieName'] + '/' + "\"#{@video_data[:show]}\" #{@video_data[:title]}" + " - " + Levenshtein.distance(t['MovieName'], "\"#{@video_data[:show]}\" #{@video_data[:title]}").to_i.to_s
-      }
-
-      p "======"
-      p x.first
-      p x.last
-      p "-------"
+      @found = x.first
       x.first['SubDownloadLink']
     end
 

@@ -14,7 +14,29 @@ module Suby
     FILTER_IGNORED = "Couldn't find any subs with the specified language. " +
                      "Filter ignored"
 
+    # TODO - cache the shit out of this
     def subtitles_url
+      response = File.read('/Users/olson/Code/pdftv/shows.xml'); get("http://#{SITE}/ajax_getShows.php", {}, false)
+      series = {}
+      body = response.gsub(/<b>.*<\/b>/,'') #response.body.gsub(/<b>.*<\/b>/,'')
+      Nokogiri(body).css('option').each {|show|
+        series[show.inner_text.strip.downcase] = show['value'].to_i
+      }
+      p @video_data
+      potential_matches = [
+        @video_data[:show],
+        @video_data[:show].gsub(' & ', ' and '),
+        @video_data[:show].gsub(' and ', ' & '),
+        @video_data[:show].gsub('\'', '')
+      ]
+      found = nil
+      potential_matches.each{|name|
+        p series[name.downcase]
+      }
+      #print response.body
+      exit
+
+
       "/serie/#{CGI.escape show}/#{season}/#{episode}/#{LANG_IDS[lang]}"
     end
 

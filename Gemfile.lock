@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    storyboard (0.2.3)
+    storyboard (0.2.4)
       levenshtein-ffi
       mime-types (>= 1.19)
       nokogiri

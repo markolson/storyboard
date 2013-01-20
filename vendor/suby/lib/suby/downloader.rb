@@ -12,7 +12,7 @@ module Suby
       DOWNLOADERS << downloader
     end
 
-    attr_reader :show, :season, :episode, :video_data, :file, :lang
+    attr_reader :show, :season, :episode, :video_data, :file, :lang, :found
 
     def initialize(file, *args)
       @file = file
@@ -84,9 +84,9 @@ module Suby
         get(url_or_response)
       end
     end
-    
+
     def save(contents)
-      sub_name(contents).write 
+      sub_name(contents).write
     end
 
     def extract(url_or_response)

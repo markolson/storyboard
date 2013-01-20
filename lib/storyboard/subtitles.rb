@@ -8,8 +8,23 @@ class Storyboard
       # that it uses to call file.basename instead of File.basename(file),
       #but "file" has to be a "Path", so, whatever.
       suby_file = Path(options[:file])
-      downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
+      #downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
+      # try Addic7ed first, as, on average, it seems a bit better.
+      downloader = nil
+      begin
+        LOG.debug("Searching for subtitles on Addic7ed")
+        #downloader = Suby::Downloader::Addic7ed.new(suby_file, 'en')
+      rescue Exception => e
+        LOG.debug(e)
+      end
+
+      if downloader.nil?
+        LOG.info("Searching for subtitles on OpenSubtitles")
+        downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
+      end
+
       LOG.debug("Found #{downloader.download_url}")
+      #LOG.debug(downloader.found)
       downloader.extract(downloader.download_url)
     end
   end
@@ -36,7 +51,7 @@ class Storyboard
       phase = :line_no
       page = nil
       @text.each_line {|l|
-        l = l.strip
+        l = l.strip.force_encoding("UTF-8")
         # Some files have BOM markers. Why? Why would you add a BOM marker.
         l.gsub!("\xEF\xBB\xBF".force_encoding("UTF-8"), '') if page.nil?
         case phase
