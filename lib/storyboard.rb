@@ -11,7 +11,7 @@ require 'mime/types'
 
 class Storyboard
   attr_accessor :options, :capture_points, :subtitles, :timings
-  attr_accessor :length, :renderers
+  attr_accessor :length, :renderers, :mime
 
   def initialize(o)
     @capture_points = []
@@ -22,13 +22,17 @@ class Storyboard
 
     Dir.mkdir(@options[:save_directory]) unless File.directory?(@options[:save_directory])
 
+    check_video
+  end
+
+  def run
     @subtitles = SRT.new(options[:subs] ? File.read(options[:subs]) : get_subtitles, options)
     # temp hack so I don't have to wait all the time.
     @subtitles.save if options[:verbose]
 
     @renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
 
-    check_video
+
     run_scene_detection if options[:scenes]
     consolidate_frames
     extract_frames
@@ -36,7 +40,6 @@ class Storyboard
   end
 
   def run_scene_detection
-    LOG.info("Scanning for scene changes. This may take a moment.")
     pbar = ProgressBar.create(:title => " Analyzing Video", :format => '%t [%B] %e', :total => @length, :smoothing => 0.6)
     bin = File.join(File.dirname(__FILE__), '../bin/storyboard-ffprobe')
     Open3.popen3('ffprobe', "-show_frames", "-of", "compact=p=0", "-f", "lavfi", %(movie=#{options[:file]},select=gt(scene\\,.30)), "-pretty") {|stdin, stdout, stderr, wait_thr|
@@ -70,7 +73,7 @@ class Storyboard
   end
 
   def extract_frames
-    pool = Thread::Pool.new(4)
+    pool = Thread::Pool.new(2)
     pbar = ProgressBar.create(:title => " Extracting Frames", :format => '%t [%c/%C|%B] %e', :total => @capture_points.count)
 
     @capture_points.each_with_index {|f,i|
@@ -94,7 +97,6 @@ class Storyboard
   end
 
   def render_output
-    LOG.info("Rendering output files")
     pbar = ProgressBar.create(:title => " Rendering Output", :format => '%t [%c/%C|%B] %e', :total => @capture_points.count)
     @capture_points.each_with_index {|f,i|
       image_name = File.join(@options[:save_directory], "%04d.jpg" % [i])
@@ -112,9 +114,13 @@ class Storyboard
   end
 
   def check_video
-    LOG.debug MIME::Types.type_for(options[:file])
+    @mime = MIME::Types.type_for(options[:file])
     @length = `ffmpeg -i "#{options[:file]}" 2>&1 | grep "Duration" | cut -d ' ' -f 4 | sed s/,//`
     @length = STRTime.parse(length.strip+'0').value
+  end
+
+  def mkv?
+    !@mime.grep(/matroska/).empty?
   end
 
 end

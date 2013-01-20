@@ -1,13 +1,28 @@
 class Storyboard
   def get_subtitles
     extensionless = File.join(File.dirname(options[:file]), File.basename(options[:file], ".*") + '.srt')
-    extensioned = options[:file] + '.srt'
+
+    if mkv?
+      if Storyboard.mkvtools_installed?
+        output = `mkvmerge -i "#{options[:file]}"`
+        subs = output.scan(/Track ID (\d+): subtitles \(S_TEXT\/UTF8\)/)
+        # until I can play with better output, take the first.
+        if not subs.empty?
+          LOG.info("Extracting embedded subtitles")
+          LOG.info("Multiple subtitles found in the mkv. Taking the first.") if subs.count > 1
+          `mkvextract tracks "#{options[:file]}" #{subs.first[0]}:"#{options[:work_dir]}/subtitles.srt"`
+          return File.read("#{options[:work_dir]}/subtitles.srt")
+        end
+      else
+        LOG.debug("File is mkv, but no mkvtoolnix installed.")
+      end
+    end
+
     if File.exists?(options[:file] + '.srt')
       return File.read(options[:file] + '.srt')
     elsif File.exists?(extensionless)
      return File.read(extensionless)
     end
-    exit
 
     if false == "the file has subtitles embedded"
 
