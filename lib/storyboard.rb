@@ -1,3 +1,5 @@
+require 'storyboard/extensions.rb'
+
 require 'storyboard/subtitles.rb'
 require 'storyboard/bincheck.rb'
 require 'storyboard/thread-util.rb'
@@ -8,6 +10,8 @@ require 'storyboard/generators/sub.rb'
 require 'storyboard/generators/pdf.rb'
 
 require 'mime/types'
+require 'fileutils'
+require 'sanitize'
 
 class Storyboard
   attr_accessor :options, :capture_points, :subtitles, :timings
@@ -18,25 +22,26 @@ class Storyboard
     @renderers = []
     @options = o
 
-    @options[:save_directory] = File.join(o[:work_dir], 'raw_frames')
-
-    Dir.mkdir(@options[:save_directory]) unless File.directory?(@options[:save_directory])
-
     check_video
   end
 
   def run
+    LOG.info("Processing #{options[:file]}")
+    setup
+
     @subtitles = SRT.new(options[:subs] ? File.read(options[:subs]) : get_subtitles, options)
-    # temp hack so I don't have to wait all the time.
+    # bit of a temp hack so I don't have to wait all the time.
     @subtitles.save if options[:verbose]
 
-    @renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
 
+    @renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
 
     run_scene_detection if options[:scenes]
     consolidate_frames
     extract_frames
     render_output
+
+    cleanup
   end
 
   def run_scene_detection
@@ -115,12 +120,30 @@ class Storyboard
 
   def check_video
     @mime = MIME::Types.type_for(options[:file])
-    @length = `ffmpeg -i "#{options[:file]}" 2>&1 | grep "Duration" | cut -d ' ' -f 4 | sed s/,//`
-    @length = STRTime.parse(length.strip+'0').value
+    if video_file?
+      @length = `ffmpeg -i "#{options[:file]}" 2>&1 | grep "Duration" | cut -d ' ' -f 4 | sed s/,//`
+      @length = STRTime.parse(length.strip+'0').value
+    end
+  end
+
+  def video_file?
+    !@mime.grep(/video\//).empty?
   end
 
   def mkv?
     !@mime.grep(/matroska/).empty?
+  end
+
+  def setup
+    @options[:basename] = File.basename(options[:file], ".*")
+    @options[:work_dir] = Dir.mktmpdir
+    Dir.mkdir(@options[:write_to]) unless File.directory?(@options[:write_to])
+    @options[:save_directory] = File.join(@options[:work_dir], 'raw_frames')
+    Dir.mkdir(@options[:save_directory]) unless File.directory?(@options[:save_directory])
+  end
+
+  def cleanup
+    FileUtils.remove_dir(@options[:work_dir])
   end
 
 end

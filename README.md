@@ -1,16 +1,22 @@
 # Storyboard
 
-Read the TV and Movies you don't have time to watch.
+Read the TV and Movies you don't have time to watch. Given a video file, it will generate a PDF (or soon, ePub and Mobi) containing every scene change and line of dialog.
 
 ## Storyboard
 
 ![Seinfeld](http://i.imgur.com/lTRuC.jpg)
 
-Storyboard is _very much_ a work in progress, and only works (most of) some of the time. Using it is simple:
+Storyboard is _very much_ a work in progress, though it works most of the time. Using it is simple:
 
-    storyboard /path/to/video-file.mkv
+    $ storyboard /path/to/video-file.mkv
 
-Storyboard will try to generate a file at `/path/to/video-file.pdf` containing the final product. ePub and Mobi support will come later.
+Storyboard will try to generate a file at `/path/to/video-file.pdf` containing the final product. Simiarly, you can pass in the path to a folder containing multiple files and it will output a PDF for each video it finds.
+
+    $ ls "~/TV/ShowName/Season 1"
+    ShowName.1x01.EpisodeName.mkv    ShowName.1x02.AnotherEpisode.mkv    ShowName.1x03.ThirdEp.mkv
+    $ storyboard "~/TV/ShowName/Season 1"
+    $ ls .
+    ShowName.1x01.EpisodeName.pdf    ShowName.1x02.AnotherEpisode.pdf    ShowName.1x03.ThirdEp.pdf
 
 You can see available commands by running the program without any options
 
@@ -23,21 +29,9 @@ You can see available commands by running the program without any options
                                        (pdf, mobi, epub)
       -h, --help                       Show this message
 
+
 ## Requirements
 
-Storyboard requires a recent version of *ffmpeg*. This gem includes a build of *ffprobe* that will only work on OS X 1.8, 64 bit. It's probably best not to use this on any different system for now. It's also best to run it on something with at least 8 cores.
+The INSTALL.md file talks about requirements some more, but Storyboard requires Ruby 1.9.3, FFMpeg 1.1, and any recent version of Imagemagick. If you already have those available, just install the storyboard gem.
 
-## Known Issues
-
-* If there is a scene change followed by dialog in the next frame or two, the dialog may not be shown.
-* Subtitles are always downloaded, never extracted from video files. Because the subtitles are searched for based on the filename it's best that you have then named in a standard format, e.g., `The X-Files - 1x21 - Tooms.avi`.
-* Sometimes the wrong subtitle file will be returned from the site. In those cases, download it manually and use the `-s` option to pass in the path to an SRT formatted subtitle file. This is because the data lies, and there's nothing I can do about it.
-* Some subtitles are encoded in UTF-16, and I haven't care quite enough yet to get them to work. Others use bad UTF8.
-* The subtitles are uuuuuugly.
-* Hardcoding 8 for the number of threads is a bad idea
-* Almost definitely some path-escaping issues, so avoid files with apostrophes and slashes
-* Some subtitles put all the text on one line, so that has to get broken up.
-
-## Help
-
-For now, best to email me theothermarkolson@gmail.com
+    gem install storyboard

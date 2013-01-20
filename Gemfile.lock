@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    storyboard (0.2.4)
+    storyboard (0.2.7)
       levenshtein-ffi
       mime-types (>= 1.19)
       nokogiri
@@ -60,6 +60,9 @@ GEM
     ruby-progressbar (1.0.2)
     ruby-rc4 (0.1.5)
     rubyzip (0.9.9)
+    sanitize (2.0.3)
+      nokogiri (>= 1.4.4, < 1.6)
+      nokogiri (>= 1.4.4, < 1.6)
     term-ansicolor (1.0.7)
     ttfunk (1.0.3)
 
@@ -73,6 +76,7 @@ DEPENDENCIES
   rmagick
   ruby-progressbar
   rubyzip
+  sanitize
   storyboard!
   suby!
   tvdb_party!

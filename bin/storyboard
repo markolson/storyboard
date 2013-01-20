@@ -10,7 +10,6 @@ ENV['BUNDLE_GEMFILE'] = File.join(File.dirname(__FILE__), '../Gemfile')
 Bundler.require(:default)
 
 require 'nokogiri'
-require 'suby'
 require 'rmagick'
 require 'prawn'
 require 'ruby-progressbar'
@@ -19,7 +18,7 @@ $LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
 require 'storyboard'
 
 unless Storyboard.ffprobe_installed?
-  puts "Storyboard requires that ffmpeg 1.1 and ffprobe 1.1 are installed. Please check the README for instructions"
+  puts "Storyboard requires ffmpeg 1.1. Please check the README for instructions"
   exit
 end
 
@@ -72,21 +71,37 @@ if ARGV.size < 1
   puts "videofile required"
   puts opts.to_s
   exit 1
+elsif ARGV.size == 2 && !File.directory?(File.realdirpath(ARGV.last))
+  puts "outputdir #{ARGV.last} is not a directory"
+  puts opts.to_s
+  exit 1
+elsif ARGV.size > 2
+  puts "Too many arguments"
+  puts opts.to_s
+  exit 1
 end
 
-options[:file] = File.realdirpath(ARGV.shift)
-output_dir = ARGV.shift || Dir.pwd
+options[:vidpath] = File.realdirpath(ARGV.shift)
+options[:write_to] = ARGV.shift || Dir.pwd
 
-if File.directory?(options[:file])
-  puts "Storyboard can't accept a folder of files yet"
+if !File.exists?(options[:vidpath])
+  puts("#{options[:vidpath]} doesn't exist.")
   exit
 end
 
-options[:basename] = File.basename(options[:file], ".*")
+filepaths = []
 
-options[:write_to] = output_dir #File.join(output_dir,options[:basename])
-options[:work_dir] = Dir.mktmpdir
-Dir.mkdir(options[:write_to]) unless File.directory?(options[:write_to])
-LOG.debug(options)
+if File.directory?(options[:vidpath])
+  LOG.info("Ignoring subtitle option because we're looking at a directory") if options[:subs]
+  options[:vidpath] = File.join(options[:vidpath], '*')
+  LOG.info("Reading video files in #{options[:vidpath]}")
+  filepaths += Dir[File.realdirpath(options[:vidpath])]
+else
+  filepaths << options[:vidpath]
+end
 
-Storyboard.new(options).run
+filepaths.each {|fp|
+  options[:file] = fp
+  runner = Storyboard.new(options)
+  runner.run if runner.video_file?
+}

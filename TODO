@@ -1,6 +1,0 @@
-epub/mobi geenerators - since mobi is generated from epub, should I just always make both?
-passing in a directory instead of a file
-error messages
-extract subtitles from the files
-imdb subtitles
-#{filename}.srt and #{File.basename(filename,".*")}.srt checks

@@ -22,7 +22,7 @@ module Suby
       Nokogiri(body).css('option').each {|show|
         series[show.inner_text.strip.downcase] = show['value'].to_i
       }
-      p @video_data
+
       potential_matches = [
         @video_data[:show],
         @video_data[:show].gsub(' & ', ' and '),

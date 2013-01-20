@@ -11,7 +11,7 @@ class Storyboard
           LOG.info("Extracting embedded subtitles")
           LOG.info("Multiple subtitles found in the mkv. Taking the first.") if subs.count > 1
           `mkvextract tracks "#{options[:file]}" #{subs.first[0]}:"#{options[:work_dir]}/subtitles.srt"`
-          return File.read("#{options[:work_dir]}/subtitles.srt")
+          return File.read("#{options[:work_dir]}/subtitles.srt", )
         end
       else
         LOG.debug("File is mkv, but no mkvtoolnix installed.")
@@ -75,9 +75,10 @@ class Storyboard
       phase = :line_no
       page = nil
       @text.each_line {|l|
-        l = l.strip.force_encoding("UTF-8")
+        l = l.strip
+        l = l.encode("UTF-32", :invalid=>:replace, :replace=>"?").encode("UTF-8")
         # Some files have BOM markers. Why? Why would you add a BOM marker.
-        l.gsub!("\xEF\xBB\xBF".force_encoding("UTF-8"), '') if page.nil?
+        l.gsub!("\xEF\xBB\xBF", '') if page.nil?
         case phase
         when :line_no
           if l =~ /^\d+$/
@@ -99,7 +100,7 @@ class Storyboard
             phase = :line_no
             @pages << page
           else
-            page[:lines] << l.gsub(%r{</?[^>]+?>}, '')
+            page[:lines] <<  l.gsub(/<\/?[^>]+?>/, '')
           end
         end
       }
