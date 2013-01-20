@@ -1,5 +1,3 @@
-require 'storyboard/extensions.rb'
-
 require 'storyboard/subtitles.rb'
 require 'storyboard/bincheck.rb'
 require 'storyboard/thread-util.rb'
