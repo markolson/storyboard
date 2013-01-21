@@ -14,6 +14,10 @@ class Storyboard
     command?("MP4Box")
   end
 
+  def self.magick_installed?
+    command?("mogrify")
+  end
+
   def self.ffprobe_installed?
     good = command?("ffprobe")
     if good

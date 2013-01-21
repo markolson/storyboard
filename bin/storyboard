@@ -13,7 +13,12 @@ $LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
 require 'storyboard'
 
 unless Storyboard.ffprobe_installed?
-  puts "Storyboard requires ffmpeg 1.1. Please check the README for instructions"
+  puts "Storyboard requires FFmpeg 1.1. Please check the README for instructions"
+  exit
+end
+
+unless Storyboard.magick_installed?
+  puts "Storyboard requires Imagemagick's mogrify tool. Please check the README for instructions on how to install Imagemagick if you need them."
   exit
 end
 
