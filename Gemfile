@@ -1,4 +1,5 @@
 source :rubygems
 
-gemspec	
+gemspec
 
+gem 'suby', :path => 'vendor/suby', :require => 'suby'

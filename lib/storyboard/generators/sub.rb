@@ -1,32 +1,41 @@
+require 'prawn'
 class Storyboard
   class Renderer
-    def add_subtitle(img, subtitle)
-      text = subtitle.lines.join("\n")
-      txt = nil
-      txtwidth = img.columns + 1
-      txtsize = 29
-      while(txtwidth > (img.columns * 0.8))
-        txtsize -= 1
-        txt = Draw.new
-        txt.pointsize = txtsize
-        o = txt.get_multiline_type_metrics(img, text)
-        txtwidth = o.width
-      end
+    @@size_canvas = Prawn::Document.new
+    def add_subtitle(image, subtitle, dimensions)
+        offset = 0
+        subtitle.lines.reverse.each_with_index {|caption,i|
+          escaped = caption.gsub(/\\|'|"/) { |c| "\\#{c}" }
+          font_size = 30
+          text_width = dimensions[0] + 1
+          while(text_width > (dimensions[0] * 0.9))
+            font_size -= 1
+            text_width = @@size_canvas.width_of(caption, :size => font_size)
+          end
 
-      txt.gravity = Magick::SouthGravity
-      txt.stroke_width = 1
-      txt.stroke = 'transparent'
-      txt.font_weight = Magick::BoldWeight
+          image.combine_options do |c|
+            c.font "helvetica"
+            c.fill "#333333"
+            c.strokewidth '1'
+            c.stroke '#000000'
+            c.pointsize font_size.to_s
+            c.gravity "south"
+            c.draw "text 0, #{offset} '#{escaped}'"
+          end
 
-      img.annotate(txt, 0,0,-2,-2, text) {
-        txt.fill = '#333333'
-      }
+          #and the shadow
+          image.combine_options do |c|
+            c.font "helvetica"
+            c.fill "#ffffff"
+            c.strokewidth '1'
+            c.stroke 'transparent'
+            c.pointsize font_size.to_s
+            c.gravity "south"
+            c.draw "text -2, #{offset-2} '#{escaped}'"
+          end
 
-      img.annotate(txt, 0,0,0,0, text){
-        txt.fill = "#ffffff"
-        txt.stroke = "#000000"
-      }
-      txt = nil
+          offset += (@@size_canvas.height_of(caption, :size => font_size)).ceil
+        }
     end
   end
 end

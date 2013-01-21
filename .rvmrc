@@ -1,1 +1,1 @@
-rvm --create use 1.9.3@storyboard
+rvm --create use 1.9.3-p327@storyboard

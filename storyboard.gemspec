@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.version       = Storyboard::VERSION
 
   gem.add_dependency 'nokogiri'
-  gem.add_dependency 'rmagick'
+  gem.add_dependency 'mini_magick'
   gem.add_dependency 'prawn'
   gem.add_dependency 'ruby-progressbar'
   gem.add_dependency 'levenshtein-ffi'

@@ -1,7 +1,5 @@
 require 'prawn'
-
-require 'rmagick'
-include Magick
+require 'mini_magick'
 
 class Storyboard
   class PDFRenderer < Storyboard::Renderer
@@ -23,23 +21,25 @@ class Storyboard
     end
 
     def render_frame(frame_name, subtitle = nil)
-      image_output = File.join(@storyboard.options[:save_directory], "sub-#{File.basename(frame_name)}")
-      img = ImageList.new(frame_name)
+      output_filename = File.join(@storyboard.options[:save_directory], "sub-#{File.basename(frame_name)}")
+      image = MiniMagick::Image.open(frame_name)
 
       if(@dimensions.empty?)
-        resize_height = (img.rows * (@storyboard.options[:max_width].to_f/img.columns)).ceil
+        resize_height = (image[:height] * (@storyboard.options[:max_width].to_f/image[:width])).ceil
         set_dimensions(storyboard.options[:max_width], resize_height)
       end
 
-      img.resize_to_fit!(@dimensions[0], @dimensions[1])
+      image.resize "#{@dimensions[0]}x#{@dimensions[1]}"
 
-      self.add_subtitle(img, subtitle) if subtitle
+      self.add_subtitle(image, subtitle, @dimensions) if subtitle
 
-      img.format = 'jpeg'
-      img.write(image_output) { self.quality = 60 }
-      img.destroy!
+      image.format 'jpeg'
+      image.write(output_filename)
+      image.destroy!
 
-      @pdf.image image_output, :width => @dimensions[0], :height => @dimensions[1]
+      @pdf.image output_filename, :width => @dimensions[0], :height => @dimensions[1]
+
+
     end
 
   end

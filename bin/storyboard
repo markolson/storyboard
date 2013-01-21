@@ -9,11 +9,6 @@ require 'bundler'
 ENV['BUNDLE_GEMFILE'] = File.join(File.dirname(__FILE__), '../Gemfile')
 Bundler.require(:default)
 
-require 'nokogiri'
-require 'rmagick'
-require 'prawn'
-require 'ruby-progressbar'
-
 $LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
 require 'storyboard'
 

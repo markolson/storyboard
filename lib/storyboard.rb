@@ -9,7 +9,10 @@ require 'storyboard/generators/pdf.rb'
 
 require 'mime/types'
 require 'fileutils'
-require 'sanitize'
+require 'tmpdir'
+
+require 'ruby-progressbar'
+require 'mini_magick'
 
 class Storyboard
   attr_accessor :options, :capture_points, :subtitles, :timings
