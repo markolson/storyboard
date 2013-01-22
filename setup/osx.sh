@@ -30,7 +30,7 @@ vercomp () {
     return 0
 }
 
-return=$(osascript -e 'tell app "System Events" to display dialog "This script will potentially download and install lots of additional software on your system, including GCC, Homebrew, FFmpeg, Imagemagick, Ghostscript, RVM, and Ruby 1.9.3. If you feel able to install these yourself, I recommend that you do. This is a crude installer that cares for nothing beyond itself." with icon caution with title "Storyboard installer" buttons {"OK", "Cancel"} default button 1' >/dev/null 2>/dev/null)
+return=$(osascript -e 'tell app "System Events" to display dialog "This script will potentially download and install lots of additional software on your system, including GCC, Homebrew, FFmpeg, Imagemagick, Ghostscript, RVM, and Ruby 1.9.3. If you feel able to install these yourself, I recommend that you do. This is a crude installer that cares for nothing beyond itself." with icon caution with title "OSX 10.8 Mountain Lion: Storyboard installer" buttons {"OK", "Cancel"} default button 1' >/dev/null 2>/dev/null)
 if [ $? -ne 0 ]; then
   exit
 fi
@@ -40,16 +40,16 @@ if [ -x /usr/bin/gcc-4.2 ]; then
     printf '%s ok %s\n' "$(tput setaf 2)" "$(tput op)"
 else
    printf '%s have to install %s\n' "$(tput setaf 1)" "$(tput op)"
-   curl -C - -O http://cloud.github.com/downloads/kennethreitz/osx-gcc-installer/GCC-10.7-v2.pkg
-   open -W GCC-10.7-v2.pkg
-   rm GCC-10.7-v2.pkg
+   curl -C - -O http://devimages.apple.com/downloads/xcode/command_line_tools_for_xcode_10_8_late_july_2012.dmg
+   open -W command_line_tools_for_xcode_10_8_late_july_2012.dmg
+   rm command_line_tools_for_xcode_10_8_late_july_2012.dmg
 fi
 
 echo -n "Checking for homebrew..."
 if [ -x /usr/local/bin/brew ]; then
     printf '%s ok %s\n' "$(tput setaf 2)" "$(tput op)"
-    #echo -n "Ensuring it's up to date..."
-    #brew update
+    echo -n "Ensuring it's up to date..."
+    brew update
 else
    printf '%s have to install %s\n' "$(tput setaf 1)" "$(tput op)"
    /usr/bin/ruby -e "$(/usr/bin/curl -fksSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
@@ -109,3 +109,4 @@ source ~/.rvm/scripts/rvm
 rvm use 1.9.3
 gem install storyboard
 rvm wrapper 1.9.3 --no-prefix storyboard
+source ~/.rvm/scripts/rvm
