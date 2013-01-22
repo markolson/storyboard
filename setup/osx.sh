@@ -36,12 +36,13 @@ if [ $? -ne 0 ]; then
 fi
 
 echo -n "Checking for gcc devtools..."
-if [ -x /usr/bin/gcc-4.2 ]; then
+if [ -x /usr/bin/llvm-gcc-4-2 -o -x /usr/bin/gcc-4.2 ]; then
     printf '%s ok %s\n' "$(tput setaf 2)" "$(tput op)"
 else
    printf '%s have to install %s\n' "$(tput setaf 1)" "$(tput op)"
    curl -C - -O http://devimages.apple.com/downloads/xcode/command_line_tools_for_xcode_10_8_late_july_2012.dmg
-   open -W command_line_tools_for_xcode_10_8_late_july_2012.dmg
+   hdiutil attach command_line_tools_for_xcode_10_8_late_july_2012.dmg
+   open -W /Volumes/Command\ Line\ Tools\ \(Mountain\ Lion\)/Command\ Line\ Tools\ \(Mountain\ Lion\).mpkg
    rm command_line_tools_for_xcode_10_8_late_july_2012.dmg
 fi
 
@@ -52,7 +53,7 @@ if [ -x /usr/local/bin/brew ]; then
     brew update
 else
    printf '%s have to install %s\n' "$(tput setaf 1)" "$(tput op)"
-   /usr/bin/ruby -e "$(/usr/bin/curl -fksSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
+   /usr/bin/ruby -e "$(/usr/bin/curl -fksSL https://raw.github.com/mxcl/homebrew/go)"
 fi
 
 echo -n "Checking for FFmpeg"
@@ -109,4 +110,3 @@ source ~/.rvm/scripts/rvm
 rvm use 1.9.3
 gem install storyboard
 rvm wrapper 1.9.3 --no-prefix storyboard
-source ~/.rvm/scripts/rvm
