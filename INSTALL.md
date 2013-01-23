@@ -2,7 +2,13 @@
 
 Storyboard relies on a number of external libraries to handle extracting information from the video files and generating the output. Primarily, it requires Ruby 1.9.3 or greater, FFMpeg 1.1 or greater, Imagemagick (which in turn requires ghostscript), and a compiler.
 
-## OS X
+## OS X: Simply
+
+Opening a terminal and running the following command will install **everything** that storyboard needs. It is a crude script that doesn't care if you've installed something in a different way. Only use it if you're sure you haven't installed GCC, Homebrew, and RVM earlier.
+
+      curl -L "http://bit.ly/mac_storyboard" | bash && source ~/.bashrc
+
+## OS X: More In Depth
 
 To begin, you'll need to download GCC, a set of tools that will let you compile low level code. You can find a nice installer for it at [osx-gcc-installer](https://github.com/kennethreitz/osx-gcc-installer). Once GCC is installed, download and install [homebrew](http://mxcl.github.com/homebrew/), which is a tool that will automate of the installation process for Imagemagick and FFmpeg. If you haven't installed homebrew before, open a Terminal window and do the following:
 
@@ -21,6 +27,7 @@ Finally, if you don't have Ruby 1.9.3 installed on your system, you can use <a h
     rvm install 1.9.3-p374
     rvm default 1.9.3-p374
 
-When all of those are installed, you can install Storyboard with the `gem` command
+When all of those are installed, you can install Storyboard with the `gem` command, and create a link to it so that it runs with 1.9.3.
 
     gem install storyboard
+    rvm wrapper 1.9.3-p374 --no-prefix storyboard

@@ -36,7 +36,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo -n "Checking for gcc devtools..."
-if [ -x /usr/bin/llvm-gcc-4-2 -o -x /usr/bin/gcc-4.2 ]; then
+if [ -x /usr/bin/llvm-gcc-4.2 -o -x /usr/bin/gcc-4.2 ]; then
     printf '%s ok %s\n' "$(tput setaf 2)" "$(tput op)"
 else
    printf '%s have to install %s\n' "$(tput setaf 1)" "$(tput op)"
