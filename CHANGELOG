@@ -1,0 +1,16 @@
+0.4.0
+
+  Added two new options to Storyboard:
+  --preview [NUMBER] will output only the first NUMBER of frames that have subtitles.
+    if --preview is used with -c (forcing a scene change scan), it may include more than
+    NUMBER of frames, as the scene changes will also be included.
+
+  -n [NUMBER] nudges the timestamps forward or back in time by NUMBER seconds.
+    Combined with --preview this lets you more quickly line up the subtitles. Error detection
+    on nudging is nonexistant, and so if you nudge them too far forward or back they could
+    cause an error.
+
+    The following example will move the subtitles back 2 seconds, and render a 25 frame PDF:
+
+    storyboard -n -2 --preview 25 Video.mkv
+

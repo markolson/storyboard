@@ -34,12 +34,20 @@ class Storyboard
     # bit of a temp hack so I don't have to wait all the time.
     @subtitles.save if options[:verbose]
 
-    # If the preview flag is set, find the timestamp that corresponds to the last frame we want
-    @time_limit = @subtitles.pages[@options[:preview]] if @options[:preview]
     @renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
 
     run_scene_detection if options[:scenes]
     consolidate_frames
+
+
+    # If the preview flag is set, do a quick count of how many subtitled frames fall before it.
+    if @options[:preview]
+      stop_time = @subtitles.pages[@options[:preview]].start_time.value
+      @stop_frame = @capture_points.count {|f| stop_time > f.value }
+    else
+      @stop_frame = @capture_points.count
+    end
+
     extract_frames
 
     render_output
@@ -82,10 +90,10 @@ class Storyboard
 
   def extract_frames
     pool = Thread::Pool.new(2)
-    pbar = ProgressBar.create(:title => " Extracting Frames", :format => '%t [%c/%C|%B] %e', :total => ( @options[:preview] || @capture_points.count ))
+    pbar = ProgressBar.create(:title => " Extracting Frames", :format => '%t [%c/%C|%B] %e', :total => @stop_frame )
 
     @capture_points.each_with_index {|f,i|
-      if @time_limit && f.value >= @time_limit.start_time.value
+      if i >= @stop_frame
         pool.shutdown
         return
       end
@@ -112,7 +120,7 @@ class Storyboard
   def render_output
     pbar = ProgressBar.create(:title => " Rendering Output", :format => '%t [%c/%C|%B] %e', :total => ( @options[:preview] || @capture_points.count ))
     @capture_points.each_with_index {|f,i|
-      next if @time_limit && f.value >= @time_limit.start_time.value
+      next if i >= @stop_frame
       image_name = File.join(@options[:save_directory], "%04d.jpg" % [i])
       capture_point_subtitles = @subtitles.pages.select { |page| f.value >=  page.start_time.value and f.value <= page.end_time.value }.first
       begin

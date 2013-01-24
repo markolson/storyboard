@@ -18,17 +18,17 @@ Storyboard will try to generate a file at `/path/to/video-file.pdf` containing t
     $ ls .
     ShowName.1x01.EpisodeName.pdf    ShowName.1x02.AnotherEpisode.pdf    ShowName.1x03.ThirdEp.pdf
 
-You can see available commands by running the program without any options
+To quickly test if the subtitles that are used look ok, you can use the `--preview NUMBER` option, which generates a PDF with as many pages as you specify, defaulting to 10.
 
-    Usage: storyboard [options] videofile [output_directory]
-      -v, --[no-]verbose               Run verbosely
-          --[no-]scenes                Detect scene changes. This increases the time it takes to generate a file.
-      -ct FLOAT                        Scene detection threshold. 0.2 is too low, 0.8 is too high. Play with it!
-      -s, --subs FILE                  SRT subtitle file to use. Will skip extracting/downloading one.
-          --make x,y,z                 Filetypes to output
-                                       (pdf, mobi, epub)
-      -h, --help                       Show this message
+    storyboard --preview /path/to/video-file.mkv
 
+If the subtitles are off, you can nudge them back or forward with the `-n TIME` option. This can be positive or negative, and if you make it too large it can cause Storyboard to throw an error. This would nudge the subtitles back 2 seconds, and generate just the preview PDF.
+
+   storyboard -n -2 --preview /path/to/video-file.mkv
+
+You can see all the available options by using the help option:
+
+    storyboard -h
 
 ## Requirements
 

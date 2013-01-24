@@ -35,12 +35,7 @@ class Storyboard
       #downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
       # try Addic7ed first, as, on average, it seems a bit better.
       downloader = nil
-      begin
-        LOG.debug("Searching for subtitles on Addic7ed")
-        #downloader = Suby::Downloader::Addic7ed.new(suby_file, 'en')
-      rescue Exception => e
-        LOG.debug(e)
-      end
+
 
       if downloader.nil?
         LOG.info("Searching for subtitles on OpenSubtitles")

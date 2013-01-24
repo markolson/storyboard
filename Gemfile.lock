@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    storyboard (0.3.1)
+    storyboard (0.4.0)
       levenshtein-ffi
       mime-types (>= 1.19)
       mini_magick
