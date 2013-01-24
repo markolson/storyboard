@@ -22,7 +22,7 @@ unless Storyboard.magick_installed?
   exit
 end
 
-options = {:scenes => true, :verbose => true, :types => ['pdf'], :scene_threshold => 0.4}
+options = {:verbose => true, :types => ['pdf'], :scene_threshold => 0.4}
 
 # think about them
 options[:consolidate_frame_threshold] = 0.4
@@ -43,16 +43,21 @@ opts.on("-c", "--[no-]scenes", "Detect scene changes. This increases the time it
   options[:scenes] = v
 end
 
-opts.on("-ct", Float, "Scene detection threshold. 0.2 is too low, 0.8 is too high. Play with it!") do |f|
-  options[:scene_threshold] = f
+opts.on("--preview [FRAMES]", Integer, "Only render the specified number (default 10) of subtitled images.", "Unless the -c flag is used, scene detection will be skipped") do |n|
+  options[:preview] = n || 10
+  options[:scenes] ||= false
 end
+
+opts.on("-n", "--nudge TIME", Float, "Nudge the subtitles forward or backward. TIME is the number of seconds.", "Use this with the --preview option to quickly check and adjust the subtitle timings.") do |time|
+  options[:nudge] = time
+end
+
+#opts.on("--make x,y,z", Array, "Filetypes to output", '(pdf, mobi, epub)') do |types|
+#  options[:types] = types
+#end
 
 opts.on("-s", "--subs FILE", "SRT subtitle file to use. Will skip extracting/downloading one.") do |s|
   options[:subs] = s
-end
-
-opts.on("--make x,y,z", Array, "Filetypes to output", '(pdf, mobi, epub)') do |types|
-  options[:types] = types
 end
 
 opts.on_tail("-h", "--help", "Show this message") do
@@ -66,6 +71,10 @@ rescue OptionParser::InvalidOption, OptionParser::InvalidArgument => e
   puts opts
   exit 1
 end
+
+options[:scenes] = true if options[:scenes].nil?
+
+p options
 
 if ARGV.size < 1
   puts "videofile required"
