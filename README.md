@@ -1,10 +1,9 @@
 # Storyboard
 
-Read the TV and Movies you don't have time to watch. Given a video file, it will generate a PDF (or soon, ePub and Mobi) containing every scene change and line of dialog.
-
-## Storyboard
-
 ![Seinfeld](http://i.imgur.com/lTRuC.jpg)
+
+Read the TV and Movies you don't have time to watch. Given a video file, it will generate a PDF (or soon, ePub and Mobi) containing every scene change and line of dialog.
+[I wrote a blog post](http://syntaxi.net/2013/01/20/storyboard) with a few more details about how Storyboard works.
 
 Storyboard is _very much_ a work in progress, though it works most of the time. Using it is simple:
 
@@ -24,7 +23,7 @@ To quickly test if the subtitles that are used look ok, you can use the `--previ
 
 If the subtitles are off, you can nudge them back or forward with the `-n TIME` option. This can be positive or negative, and if you make it too large it can cause Storyboard to throw an error. This would nudge the subtitles back 2 seconds, and generate just the preview PDF.
 
-   storyboard -n -2 --preview /path/to/video-file.mkv
+    storyboard -n -2 --preview /path/to/video-file.mkv
 
 You can see all the available options by using the help option:
 
