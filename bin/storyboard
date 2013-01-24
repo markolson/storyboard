@@ -22,7 +22,7 @@ unless Storyboard.magick_installed?
   exit
 end
 
-options = {:verbose => true, :types => ['pdf'], :scene_threshold => 0.4}
+options = {:nudge => 0, :verbose => true, :types => ['pdf'], :scene_threshold => 0.4}
 
 # think about them
 options[:consolidate_frame_threshold] = 0.4

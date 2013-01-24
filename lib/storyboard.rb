@@ -146,6 +146,7 @@ class Storyboard
   def setup
     @options[:basename] = File.basename(options[:file], ".*")
     @options[:work_dir] = Dir.mktmpdir
+    raise "Unable to create temporary directory" unless File.directory?(@options[:work_dir])
     Dir.mkdir(@options[:write_to]) unless File.directory?(@options[:write_to])
     @options[:save_directory] = File.join(@options[:work_dir], 'raw_frames')
     Dir.mkdir(@options[:save_directory]) unless File.directory?(@options[:save_directory])

@@ -89,8 +89,8 @@ class Storyboard
           end
         when :time
           if l =~ /^(#{TIME_REGEX}) --> (#{TIME_REGEX})$/
-            page[:start_time] = STRTime.parse($1)
-            page[:end_time] = STRTime.parse($2)
+            page[:start_time] = STRTime.parse($1) + @options[:nudge]
+            page[:end_time] = STRTime.parse($2) + @options[:nudge]
             phase = :text
           else
             raise "Bad SRT File: Should have time range but got '#{l}'"
