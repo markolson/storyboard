@@ -82,8 +82,6 @@ end
 
 options[:scenes] = true if options[:scenes].nil?
 
-p options
-
 if ARGV.size < 1
   puts "videofile required"
   puts opts.to_s
