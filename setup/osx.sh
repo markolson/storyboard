@@ -78,7 +78,7 @@ if [ -x /usr/local/bin/convert ]; then
   printf '%s ok %s\n' "$(tput setaf 2)" "$(tput op)"
 else
   printf '%s have to install %s\n' "$(tput setaf 1)" "$(tput op)"
-  brew install imagemagick
+  brew install imagemagick libtool
 fi
 
 echo -n "Checking for Ghostscript"
