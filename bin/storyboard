@@ -28,6 +28,8 @@ options = {:nudge => 0, :verbose => true, :types => ['pdf'], :scene_threshold =>
 options[:consolidate_frame_threshold] = 0.4
 options[:max_width] = 600
 
+puts "Running Storyboard #{Storyboard::VERSION}"
+
 LOG = Logger.new(STDOUT)
 LOG.level = Logger::INFO
 
@@ -58,6 +60,12 @@ end
 
 opts.on("-s", "--subs FILE", "SRT subtitle file to use. Will skip extracting/downloading one.") do |s|
   options[:subs] = s
+end
+
+opts.on('--update', "Update Storyboard to the latest available version") do |u|
+  # This execs in the current environment, I believe.
+  puts `gem update storyboard`
+  exit
 end
 
 opts.on_tail("-h", "--help", "Show this message") do
