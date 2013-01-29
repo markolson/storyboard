@@ -1,3 +1,5 @@
+require 'pp'
+
 class Storyboard
   def get_subtitles
     extensionless = File.join(File.dirname(options[:file]), File.basename(options[:file], ".*") + '.srt')
@@ -41,12 +43,21 @@ class Storyboard
         LOG.info("Searching for subtitles on OpenSubtitles")
         downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
       end
-
+      pp downloader.possible_urls
       LOG.debug("Found #{downloader.download_url}")
       #LOG.debug(downloader.found)
       downloader.extract(downloader.download_url)
     end
   end
+
+  private
+
+  def best_subtitle_match
+
+    {perfect: true, url: ""}
+  end
+
+  public
 
 
   class SRT
@@ -70,10 +81,10 @@ class Storyboard
       phase = :line_no
       page = nil
       @text.each_line {|l|
-        l = l.strip
-        l = l.encode("UTF-32", :invalid=>:replace, :replace=>"?").encode("UTF-8")
+        l.gsub!("\xEF\xBB\xBF".force_encoding("UTF-8"), '') if page.nil?
         # Some files have BOM markers. Why? Why would you add a BOM marker.
-        l.gsub!("\xEF\xBB\xBF", '') if page.nil?
+        l = l.encode("UTF-32", :invalid=>:replace, :replace=>"?").encode("UTF-8")
+        l = l.strip
         case phase
         when :line_no
           if l =~ /^\d+$/

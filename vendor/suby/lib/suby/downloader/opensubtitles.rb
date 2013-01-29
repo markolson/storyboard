@@ -30,7 +30,7 @@ module Suby
     }
     LANG_MAPPING.default = 'all'
 
-    def download_url
+    def possible_urls
       s = SEARCH_QUERIES_ORDER.find(lambda { raise NotFoundError, "no subtitles available" }) { |type|
         if subs = search_subtitles(search_query(type))['data']
           @type = type
@@ -39,8 +39,11 @@ module Suby
       }
       x = @video_data[:season] ? s.select { |t| t['SeriesSeason'].to_i == @video_data[:season].to_i } : s
       x.sort_by! { |t| Levenshtein.distance(t['MovieName'], "\"#{@video_data[:show]}\" #{@video_data[:title]}").to_i }
-      @found = x.first
-      x.first['SubDownloadLink']
+      return x
+    end
+
+    def download_url(no_this_one=nil)
+      (no_this_one || possible_urls[0])['SubDownloadLink']
     end
 
     def search_subtitles(query)
