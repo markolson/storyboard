@@ -37,9 +37,7 @@ module Suby
           break subs
         end
       }
-      x = @video_data[:season] ? s.select { |t| t['SeriesSeason'].to_i == @video_data[:season].to_i } : s
-      x.sort_by! { |t| Levenshtein.distance(t['MovieName'], "\"#{@video_data[:show]}\" #{@video_data[:title]}").to_i }
-      return x
+      return s
     end
 
     def download_url(no_this_one=nil)

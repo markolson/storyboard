@@ -3,6 +3,7 @@ require 'storyboard/bincheck.rb'
 require 'storyboard/thread-util.rb'
 require 'storyboard/time.rb'
 require 'storyboard/version.rb'
+require 'storyboard/cache.rb'
 
 require 'storyboard/generators/sub.rb'
 require 'storyboard/generators/pdf.rb'
@@ -14,9 +15,11 @@ require 'tmpdir'
 require 'ruby-progressbar'
 require 'mini_magick'
 
+require 'json'
+
 class Storyboard
   attr_accessor :options, :capture_points, :subtitles, :timings
-  attr_accessor :length, :renderers, :mime
+  attr_accessor :length, :renderers, :mime, :cache
 
   def initialize(o)
     @capture_points = []
@@ -30,9 +33,15 @@ class Storyboard
     LOG.info("Processing #{options[:file]}")
     setup
 
+    @cache = Cache.new(Suby::MovieHasher.compute_hash(Path.new(options[:file])))
+
+    LOG.debug(options) if options[:verbose]
+
     @subtitles = SRT.new(options[:subs] ? File.read(options[:subs]) : get_subtitles, options)
     # bit of a temp hack so I don't have to wait all the time.
     @subtitles.save if options[:verbose]
+
+    @cache.save
 
     @renderers << Storyboard::PDFRenderer.new(self) if options[:types].include?('pdf')
 
@@ -51,7 +60,7 @@ class Storyboard
     extract_frames
 
     render_output
-
+    exit
     cleanup
   end
 
@@ -80,7 +89,7 @@ class Storyboard
       # while it should be a super rare condition, this should not be
       # allowed to delete subtitle frames.
       if (ts.value - last_time.value) < options[:consolidate_frame_threshold]
-        @capture_points.delete_at(i-1) unless i == 0
+        #@capture_points.delete_at(i-1) unless i == 0
         removed += 1
       end
       last_time = ts

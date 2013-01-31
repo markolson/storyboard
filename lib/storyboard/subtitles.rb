@@ -26,35 +26,49 @@ class Storyboard
      return File.read(extensionless)
     end
 
-    if false == "the file has subtitles embedded"
+    LOG.debug("No subtitles embeded. Using suby.")
+    # suby includes a giant util library the guy also wrote
+    # that it uses to call file.basename instead of File.basename(file),
+    #but "file" has to be a "Path", so, whatever.
+    suby_file = Path(options[:file])
+    downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
+    chosen = nil
 
-    else
-      LOG.debug("No subtitles embeded. Using suby.")
-      # suby includes a giant util library the guy also wrote
-      # that it uses to call file.basename instead of File.basename(file),
-      #but "file" has to be a "Path", so, whatever.
-      suby_file = Path(options[:file])
-      #downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
-      # try Addic7ed first, as, on average, it seems a bit better.
-      downloader = nil
-
-
-      if downloader.nil?
-        LOG.info("Searching for subtitles on OpenSubtitles")
-        downloader = Suby::Downloader::OpenSubtitles.new(suby_file, 'en')
-      end
-      pp downloader.possible_urls
-      LOG.debug("Found #{downloader.download_url}")
-      #LOG.debug(downloader.found)
-      downloader.extract(downloader.download_url)
+    if @cache.subtitles.nil?
+      LOG.info("No subtitles cache found")
+      @cache.subtitles = downloader.possible_urls
+      @cache.save
     end
+    chosen = pick_best_subtitle(@cache.subtitles)
+    contents = @cache.download_file(chosen) do
+      downloader.extract(chosen)
+    end
+    contents
   end
 
   private
 
-  def best_subtitle_match
+  def pick_best_subtitle(given)
+    given = sort_matches(given)
+    if given.length > 0
+      puts "There are multiple subtitles that could work with this file. Please choose one!"
+      given.each_with_index {|s, i|
+        puts "#{i+1}: '#{s['SubFileName']}', added #{s['SubAddDate']}"
+      }
+      print "choice (default 1): "
+      p gets.chomp
+      raise "This is as far as I've gotten with this. Wooooooo"
+      exit
+      return given[0]['SubDownloadLink']
+    else
+      return given[0]['SubDownloadLink']
+    end
+  end
 
-    {perfect: true, url: ""}
+  def sort_matches(x)
+    # filter to only {"MatchedBy"=>"moviehash"}, if possible
+    # select only matching filesizes, if nonzero and matching
+   x
   end
 
   public

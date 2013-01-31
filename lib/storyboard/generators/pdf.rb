@@ -30,9 +30,9 @@ class Storyboard
       end
 
       image.resize "#{@dimensions[0]}x#{@dimensions[1]}"
+      image.quality("60")
 
       self.add_subtitle(image, subtitle, @dimensions) if subtitle
-
       image.format 'jpeg'
       image.write(output_filename)
       image.destroy!
