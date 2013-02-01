@@ -89,7 +89,7 @@ class Storyboard
       # while it should be a super rare condition, this should not be
       # allowed to delete subtitle frames.
       if (ts.value - last_time.value) < options[:consolidate_frame_threshold]
-        #@capture_points.delete_at(i-1) unless i == 0
+        @capture_points.delete_at(i-1) unless i == 0
         removed += 1
       end
       last_time = ts
