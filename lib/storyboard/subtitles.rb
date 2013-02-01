@@ -26,7 +26,6 @@ class Storyboard
      return File.read(extensionless)
     end
 
-    LOG.debug("No subtitles embeded. Using suby.")
     # suby includes a giant util library the guy also wrote
     # that it uses to call file.basename instead of File.basename(file),
     #but "file" has to be a "Path", so, whatever.
@@ -50,9 +49,14 @@ class Storyboard
 
   def pick_best_subtitle(given)
     given = sort_matches(given)
-    if given.length > 0
+    if given.length == 0
+      raise "No subtitles found."
+    elsif given.length == 1
+      return given[0]['SubDownloadLink']
+    elsif given.length > 1
       sub = nil
       puts "There are multiple subtitles that could work with this file. Please choose one!"
+      puts "All of these are subtitles made for this exact video file, so any should work." if given[0]['MatchedBy'] == 'moviehash'
       while not sub
         given.each_with_index {|s, i|
           puts "#{i+1}: '#{s['SubFileName']}', added #{s['SubAddDate']}"
@@ -67,8 +71,6 @@ class Storyboard
         end
       end
       return sub
-    else
-      return given[0]['SubDownloadLink']
     end
   end
 
