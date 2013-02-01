@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 1.9.2'
   s.add_dependency 'path', '>= 1.3.0'
-  s.add_dependency 'nokogiri'
+  #s.add_dependency 'nokogiri'
   s.add_dependency 'rubyzip'
   s.add_dependency 'term-ansicolor'
   s.add_dependency 'mime-types', '>= 1.19'

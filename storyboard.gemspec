@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib","vendor/suby"]
   gem.version       = Storyboard::VERSION
 
-  gem.add_dependency 'nokogiri'
+  gem.add_dependency 'bundler'
   gem.add_dependency 'mini_magick'
   gem.add_dependency 'prawn'
   gem.add_dependency 'ruby-progressbar'

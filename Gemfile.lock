@@ -1,11 +1,11 @@
 PATH
   remote: .
   specs:
-    storyboard (0.4.1)
+    storyboard (0.5.0)
+      bundler
       levenshtein-ffi
       mime-types (>= 1.19)
       mini_magick
-      nokogiri
       path (>= 1.3.0)
       prawn
       ruby-progressbar
@@ -17,7 +17,6 @@ PATH
   specs:
     suby (0.4.0)
       mime-types (>= 1.19)
-      nokogiri
       path (>= 1.3.0)
       rubyzip
       term-ansicolor
@@ -35,7 +34,6 @@ GEM
     mime-types (1.19)
     mini_magick (3.4)
       subexec (~> 0.2.1)
-    nokogiri (1.5.6)
     path (1.3.1)
     pdf-reader (1.3.0)
       Ascii85 (~> 1.0.0)

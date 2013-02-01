@@ -1,6 +1,5 @@
 require 'net/http'
 require 'cgi/util'
-require 'nokogiri'
 require 'xmlrpc/client'
 require 'zlib'
 require 'stringio'
@@ -172,6 +171,4 @@ end
 # Defines downloader order
 %w[
     opensubtitles
-    tvsubtitles
-    addic7ed
   ].each { |downloader| require_relative "downloader/#{downloader}" }
