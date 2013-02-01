@@ -51,15 +51,22 @@ class Storyboard
   def pick_best_subtitle(given)
     given = sort_matches(given)
     if given.length > 0
+      sub = nil
       puts "There are multiple subtitles that could work with this file. Please choose one!"
-      given.each_with_index {|s, i|
-        puts "#{i+1}: '#{s['SubFileName']}', added #{s['SubAddDate']}"
-      }
-      print "choice (default 1): "
-      p gets.chomp
-      raise "This is as far as I've gotten with this. Wooooooo"
-      exit
-      return given[0]['SubDownloadLink']
+      while not sub
+        given.each_with_index {|s, i|
+          puts "#{i+1}: '#{s['SubFileName']}', added #{s['SubAddDate']}"
+        }
+        print "choice (default 1): "
+        input = gets.chomp
+        number = input.empty? ? 1 : input.to_i
+        if number > given.count || number < 1
+          puts "Try again. Choose a subtitle between 1 and #{given.count}"
+        else
+          sub = given[number-1]['SubDownloadLink']
+        end
+      end
+      return sub
     else
       return given[0]['SubDownloadLink']
     end
