@@ -1,0 +1,104 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'shellwords'
+require 'optparse'
+require 'logger'
+require 'open3'
+require 'bundler'
+ENV['BUNDLE_GEMFILE'] = File.join(File.dirname(__FILE__), '../Gemfile')
+Bundler.require(:default)
+
+$LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
+require 'gifboard'
+
+unless Storyboard.ffprobe_installed?
+  puts "Storyboard requires FFmpeg 1.1. Please check the README for instructions"
+  exit
+end
+
+unless Storyboard.magick_installed?
+  puts "Storyboard requires Imagemagick's mogrify tool. Please check the README for instructions on how to install Imagemagick if you need them."
+  exit
+end
+
+options = {:nudge => 0, :verbose => true, :max_width => 500}
+
+puts "Running Gifboard #{Storyboard::VERSION}"
+
+LOG = Logger.new(STDOUT)
+LOG.level = Logger::INFO
+
+opts = OptionParser.new
+opts.banner = "Usage: gifboard [options] videofile [output_directory]"
+
+opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+  options[:version] = v
+  LOG.level = Logger::DEBUG if v
+end
+
+opts.on('-t "[text]"', "Subtitle text to build the GIF around") do |t|
+  options[:text] = t
+end
+opts.on("-n", "--nudge TIME", Float, "Nudge the subtitles forward or backward. TIME is the number of seconds.", "Use this with the --preview option to quickly check and adjust the subtitle timings.") do |time|
+  options[:nudge] = time
+end
+
+
+opts.on("-s", "--subs FILE", "SRT subtitle file to use. Will skip extracting/downloading one.") do |s|
+  options[:subs] = s
+end
+
+
+opts.on_tail("-h", "--help", "Show this message") do
+  puts opts
+  exit
+end
+
+begin opts.parse! ARGV
+rescue OptionParser::InvalidOption, OptionParser::InvalidArgument => e
+  puts e
+  puts opts
+  exit 1
+end
+
+if options[:text].nil?
+  puts "You need to specify what text to look for with the -t option. Listing all subtitles instead."
+end
+
+if ARGV.size < 1
+  puts "videofile required"
+  puts opts.to_s
+  exit 1
+elsif ARGV.size == 2 && !File.directory?(File.realdirpath(ARGV.last))
+  puts "outputdir #{ARGV.last} is not a directory"
+  puts opts.to_s
+  exit 1
+elsif ARGV.size > 2
+  puts "Too many arguments"
+  puts opts.to_s
+  exit 1
+end
+
+options[:vidpath] = File.realdirpath(ARGV.shift)
+options[:write_to] = ARGV.shift || Dir.pwd
+
+if !File.exists?(options[:vidpath])
+  puts("#{options[:vidpath]} doesn't exist.")
+  exit
+end
+
+filepaths = []
+
+if File.directory?(options[:vidpath])
+  raise "Gifboard can only use one file at a time. Don't pass a directory."
+  exit
+else
+  filepaths << options[:vidpath]
+end
+
+filepaths.each {|fp|
+  options[:file] = fp
+  runner = Gifboard.new(options)
+  runner.run if runner.video_file?
+}
