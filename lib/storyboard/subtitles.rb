@@ -87,12 +87,13 @@ class Storyboard
     Page = Struct.new(:index, :start_time, :end_time, :lines)
 
     SPAN_REGEX = '[[:digit:]]+:[[:digit:]]+:[[:digit:]]+[,\.][[:digit:]]+'
-    attr_accessor :text, :pages, :options, :encoding
+    attr_accessor :text, :pages, :options, :encoding, :needs_KFhimaji
 
     def initialize(contents, parent_options)
       @options = parent_options
       @text = contents
       @pages = []
+      @needs_KFhimaji = false
       check_bom(@text.lines.first)
       Storyboard.current_encoding = @encoding
       @text = @text.force_encoding(Storyboard.current_encoding)
@@ -130,7 +131,6 @@ class Storyboard
           l = l.gsub(Storyboard.encode_regexp('\W'),'')
           if l =~ Storyboard.encode_regexp('^\d+$')
             page = Page.new(@pages.count + 1, nil, nil, [])
-            p "NEW LINE NO #{page.index}"
             phase = :time
           elsif !l.empty?
             raise "Bad SRT File: Should have a block number but got '#{l.force_encoding('UTF-8')}' [#{l.bytes.to_a.join(',')}]"
@@ -150,7 +150,7 @@ class Storyboard
             phase = :line_no
             @pages << page
           else
-            puts ""
+            @needs_KFhimaji ||= l.contains_cjk?
             page[:lines] << l
           end
         end

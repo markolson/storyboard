@@ -8,7 +8,6 @@ class STRTime
         Float(i.force_encoding("ASCII-8bit").delete("\000"))
       }
       value = ((((hh*60)+mm)*60)+ss) + ms/1000
-      p value
       self.new(value)
     end
   end

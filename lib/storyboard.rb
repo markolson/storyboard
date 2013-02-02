@@ -4,6 +4,7 @@ require 'storyboard/thread-util.rb'
 require 'storyboard/time.rb'
 require 'storyboard/version.rb'
 require 'storyboard/cache.rb'
+require 'storyboard/common.rb'
 
 require 'storyboard/generators/sub.rb'
 require 'storyboard/generators/pdf.rb'
@@ -27,6 +28,10 @@ class Storyboard
     @options = o
     @encoding = "UTF-8"
     check_video
+  end
+
+  def self.path
+    File.dirname(__FILE__) + '/../'
   end
 
   def self.current_encoding
