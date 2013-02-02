@@ -19,14 +19,30 @@ require 'json'
 
 class Storyboard
   attr_accessor :options, :capture_points, :subtitles, :timings
-  attr_accessor :length, :renderers, :mime, :cache
+  attr_accessor :length, :renderers, :mime, :cache, :encoding
 
   def initialize(o)
     @capture_points = []
     @renderers = []
     @options = o
-
+    @encoding = "UTF-8"
     check_video
+  end
+
+  def self.current_encoding
+    @encoding || 'UTF-8'
+  end
+
+  def self.current_encoding=(n)
+    @encoding = n
+  end
+
+  def self.encode_regexp(r)
+    Regexp.new(r.encode(Storyboard.current_encoding), 16)
+  end
+
+  def self.encode_string(r)
+    r.encode(Storyboard.current_encoding)
   end
 
   def run

@@ -1,12 +1,14 @@
 class STRTime
-  REGEX = /(\d{1,2}):(\d{1,2}):(\d{2})[,\.](\d{1,3})/
-
+  REGEX = '([[:digit:]]+):([[:digit:]]+):([[:digit:]]+)[,\.]([[:digit:]]+)'
   attr_reader :value
 
   class <<self
     def parse(str)
-      hh,mm,ss,ms = str.scan(REGEX).flatten.map{|i| Float(i)}
+      hh,mm,ss,ms = str.scan(Storyboard.encode_regexp(REGEX)).flatten.map{|i|
+        Float(i.force_encoding("ASCII-8bit").delete("\000"))
+      }
       value = ((((hh*60)+mm)*60)+ss) + ms/1000
+      p value
       self.new(value)
     end
   end

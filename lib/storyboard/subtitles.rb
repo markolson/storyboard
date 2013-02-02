@@ -86,50 +86,72 @@ class Storyboard
   class SRT
     Page = Struct.new(:index, :start_time, :end_time, :lines)
 
-    TIME_REGEX = /\d{2}:\d{2}:\d{2}[,\.]\d{1,4}/
-    attr_accessor :text, :pages, :options
+    SPAN_REGEX = '[[:digit:]]+:[[:digit:]]+:[[:digit:]]+[,\.][[:digit:]]+'
+    attr_accessor :text, :pages, :options, :encoding
 
     def initialize(contents, parent_options)
       @options = parent_options
       @text = contents
       @pages = []
+      check_bom(@text.lines.first)
+      Storyboard.current_encoding = @encoding
+      @text = @text.force_encoding(Storyboard.current_encoding)
       parse
       clean_promos
       LOG.info("Parsed subtitle file. #{count} entries found.")
     end
+
+
+    def check_bom(line)
+      bom_check = line.force_encoding("UTF-8").lines.to_a[0].bytes.to_a
+      @encoding = 'UTF-8'
+      if bom_check[0..1] == [255,254]
+        @encoding = "UTF-16LE"
+        ret = line[2..6]
+      elsif bom_check[0..2] == [239,187,191]
+        @encoding = "UTF-8"
+        ret = line[3..6]
+      end
+      line
+    end
+
 
     #There are some horrid files, so I want to be able to have more than just a single regex
     #to parse the srt file. Eventually, handling these errors will be a thing to do.
     def parse
       phase = :line_no
       page = nil
+
       @text.each_line {|l|
-        l.gsub!("\xEF\xBB\xBF".force_encoding("UTF-8"), '') if page.nil?
-        # Some files have BOM markers. Why? Why would you add a BOM marker.
-        l = l.encode("UTF-32", :invalid=>:replace, :replace=>"?").encode("UTF-8")
         l = l.strip
+        #p l.bytes.to_a
         case phase
         when :line_no
-          if l =~ /^\d+$/
+          l = l.gsub(Storyboard.encode_regexp('\W'),'')
+          if l =~ Storyboard.encode_regexp('^\d+$')
             page = Page.new(@pages.count + 1, nil, nil, [])
+            p "NEW LINE NO #{page.index}"
             phase = :time
           elsif !l.empty?
-            raise "Bad SRT File: Should have a block number but got '#{l}' [#{l.bytes.to_a.join(',')}]"
+            raise "Bad SRT File: Should have a block number but got '#{l.force_encoding('UTF-8')}' [#{l.bytes.to_a.join(',')}]"
           end
         when :time
-          if l =~ /^(#{TIME_REGEX}) --> (#{TIME_REGEX})$/
+
+          l = l.gsub(Storyboard.encode_regexp('[^\,\:[0-9] \-\>]'), '')
+          if l =~ Storyboard.encode_regexp("^(#{SPAN_REGEX}) --> (#{SPAN_REGEX})$")
             page[:start_time] = STRTime.parse($1) + @options[:nudge]
             page[:end_time] = STRTime.parse($2) + @options[:nudge]
             phase = :text
           else
-            raise "Bad SRT File: Should have time range but got '#{l}'"
+            raise "Bad SRT File: Should have time range but got '#{l}'".force_encoding(Storyboard.current_encoding)
           end
         when :text
           if l.empty?
             phase = :line_no
             @pages << page
           else
-            page[:lines] <<  l.gsub(/<\/?[^>]+?>/, '')
+            puts ""
+            page[:lines] << l
           end
         end
       }
@@ -138,10 +160,10 @@ class Storyboard
     # Strip out obnoxious "CREATED BY L33T DUD3" or "DOWNLOADED FROM ____" text
     def clean_promos
       @pages.delete_if {|page|
-        !page[:lines].grep(/Subtitles downloaded/).empty? ||
-        !page[:lines].grep(/addic7ed/).empty? ||
-        !page[:lines].grep(/OpenSubtitles/).empty? ||
-        !page[:lines].grep(/sync, corrected by/).empty? ||
+        !page[:lines].grep(Storyboard.encode_regexp('Subtitles downloaded')).empty? ||
+        !page[:lines].grep(Storyboard.encode_regexp('addic7ed')).empty? ||
+        !page[:lines].grep(Storyboard.encode_regexp('OpenSubtitles')).empty? ||
+        !page[:lines].grep(Storyboard.encode_regexp('sync, corrected by')).empty? ||
         false
       }
     end
