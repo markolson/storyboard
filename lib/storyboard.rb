@@ -21,13 +21,19 @@ require 'json'
 class Storyboard
   attr_accessor :options, :capture_points, :subtitles, :timings
   attr_accessor :length, :renderers, :mime, :cache, :encoding
+  attr_accessor :needs_KFhimaji
 
   def initialize(o)
+    @needs_KFhimaji = false
     @capture_points = []
     @renderers = []
     @options = o
     @encoding = "UTF-8"
     check_video
+  end
+
+  def self.needs_KFhimaji(set = false)
+    @needs_KFhimaji ||= set
   end
 
   def self.path

@@ -87,7 +87,7 @@ class Storyboard
     Page = Struct.new(:index, :start_time, :end_time, :lines)
 
     SPAN_REGEX = '[[:digit:]]+:[[:digit:]]+:[[:digit:]]+[,\.][[:digit:]]+'
-    attr_accessor :text, :pages, :options, :encoding, :needs_KFhimaji
+    attr_accessor :text, :pages, :options, :encoding
 
     def initialize(contents, parent_options)
       @options = parent_options
@@ -150,8 +150,8 @@ class Storyboard
             phase = :line_no
             @pages << page
           else
-            @needs_KFhimaji ||= l.contains_cjk?
-            page[:lines] << l
+            Storyboard.needs_KFhimaji(true) if l.contains_cjk?
+            page[:lines] << l.gsub(Storyboard.encode_regexp("<\/?[^>]*>"), "")
           end
         end
       }

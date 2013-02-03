@@ -1,5 +1,5 @@
 class STRTime
-  REGEX = '([[:digit:]]+):([[:digit:]]+):([[:digit:]]+)[,\.]([[:digit:]]+)'
+  REGEX = '([[:digit:]]+):([[:digit:]]+):([[:digit:]]+)[,\.]([[:digit:]]{3})'
   attr_reader :value
 
   class <<self
