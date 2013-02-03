@@ -4,6 +4,7 @@ require 'storyboard/thread-util.rb'
 require 'storyboard/time.rb'
 require 'storyboard/version.rb'
 require 'storyboard/cache.rb'
+require 'storyboard/common.rb'
 
 require 'storyboard/generators/sub.rb'
 require 'storyboard/generators/pdf.rb'
@@ -19,14 +20,40 @@ require 'json'
 
 class Storyboard
   attr_accessor :options, :capture_points, :subtitles, :timings
-  attr_accessor :length, :renderers, :mime, :cache
+  attr_accessor :length, :renderers, :mime, :cache, :encoding
+  attr_accessor :needs_KFhimaji
 
   def initialize(o)
+    @needs_KFhimaji = false
     @capture_points = []
     @renderers = []
     @options = o
-
+    @encoding = "UTF-8"
     check_video
+  end
+
+  def self.needs_KFhimaji(set = false)
+    @needs_KFhimaji ||= set
+  end
+
+  def self.path
+    File.dirname(__FILE__) + '/../'
+  end
+
+  def self.current_encoding
+    @encoding || 'UTF-8'
+  end
+
+  def self.current_encoding=(n)
+    @encoding = n
+  end
+
+  def self.encode_regexp(r)
+    Regexp.new(r.encode(Storyboard.current_encoding), 16)
+  end
+
+  def self.encode_string(r)
+    r.encode(Storyboard.current_encoding)
   end
 
   def run
