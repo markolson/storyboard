@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    storyboard (0.5.0)
+    storyboard (0.5.0.pre3)
       bundler
       levenshtein-ffi
       mime-types (>= 1.19)

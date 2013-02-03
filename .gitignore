@@ -5,4 +5,5 @@
 *.log
 *.png
 *.xml*
+*.gif
 .DS_Store
