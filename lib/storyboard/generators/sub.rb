@@ -4,7 +4,7 @@ class Storyboard
     @@size_canvas = Prawn::Document.new
 
     def write_mvg(offset, line, nudge=0)
-      out = File.open('/Users/olson/Downloads/tmp.mvg', 'wt', encoding: 'UTF-8')
+      out = File.open(File.join(@storyboard.options[:save_directory], 'tmp.mvg'), 'wt', encoding: 'UTF-8')
       out.print("text #{(0+nudge).to_s}, #{(offset+nudge).to_s} '")
       out.print line
       out.print "'"
@@ -22,7 +22,7 @@ class Storyboard
           text_width = @@size_canvas.width_of(caption.encode!("utf-8"), :size => font_size)
         end
 
-        font = Storyboard.needs_KFhimaji ? "#{Storyboard.path}/fonts/KFhimaji.otf" : "Helvetica"
+        font = Storyboard.needs_KFhimaji ? "#{Storyboard.path}/fonts/KFhimaji.otf" : "#{Storyboard.path}/fonts/DejaVuSans.ttf"
 
         write_mvg(offset,escaped, 0)
         image.combine_options do |c|
@@ -32,7 +32,7 @@ class Storyboard
           c.stroke '#000000'
           c.pointsize font_size.to_s
           c.gravity "south"
-          c.draw '@/Users/olson/Downloads/tmp.mvg'
+          c.draw "@#{File.join(@storyboard.options[:save_directory],'tmp.mvg')}"
         end
 
 
@@ -45,7 +45,7 @@ class Storyboard
           c.stroke 'transparent'
           c.pointsize font_size.to_s
           c.gravity "south"
-          c.draw '@/Users/olson/Downloads/tmp.mvg'
+          c.draw "@#{File.join(@storyboard.options[:save_directory],'tmp.mvg')}"
         end
 
         offset += (@@size_canvas.height_of(caption.encode!("utf-8"), :size => font_size)).ceil

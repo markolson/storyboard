@@ -43,7 +43,6 @@ class Gifboard < Storyboard
       @renderers << Storyboard::GifRenderer.new(self)
 
       selected = choose_text
-      p selected.end_time.value - selected.start_time.value
       @capture_points << selected.start_time
       (0.1).step(selected.end_time.value - selected.start_time.value, 0.1) {|i|
         @capture_points << selected.start_time + i
@@ -62,6 +61,8 @@ class Gifboard < Storyboard
           puts l
         }
       }
+      puts "\n\nYou need to specify what text to look for with the -t option. Listing all subtitles instead."
+      puts "ex: gifboard -t 'a funny joke ha. ha' video.mkv"
     end
   end
 

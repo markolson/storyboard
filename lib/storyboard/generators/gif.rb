@@ -16,7 +16,6 @@ class Storyboard
 
     def write
       `cd #{@storyboard.options[:save_directory]} && convert -coalesce -delay 10 -layers OptimizeTransparency -loop 0 -ordered-dither o8x8,8,8,4 +map sub-* "#{@storyboard.options[:write_to]}/#{@storyboard.options[:basename]}.gif"`
-      `open #{@storyboard.options[:write_to]}`
       LOG.info("Wrote #{@storyboard.options[:write_to]}/#{@storyboard.options[:basename]}.gif")
     end
 

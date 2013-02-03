@@ -62,10 +62,6 @@ rescue OptionParser::InvalidOption, OptionParser::InvalidArgument => e
   exit 1
 end
 
-if options[:text].nil?
-  puts "You need to specify what text to look for with the -t option. Listing all subtitles instead."
-end
-
 if ARGV.size < 1
   puts "videofile required"
   puts opts.to_s
