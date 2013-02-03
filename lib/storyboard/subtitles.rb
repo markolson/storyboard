@@ -120,7 +120,7 @@ class Storyboard
 
     def fix_encoding(l)
       # The only  ISO8859-1  I hit so far. I expec this to grow.
-      if l.bytes.member? 233
+      if !(l.bytes.to_a |  [233,146]).empty?
         l = l.unpack("C*").pack("U*")
       end
       l
