@@ -1,4 +1,5 @@
 require 'pp'
+require 'iconv'
 
 class Storyboard
   def get_subtitles
@@ -96,7 +97,7 @@ class Storyboard
       @needs_KFhimaji = false
       check_bom(@text.lines.first)
       Storyboard.current_encoding = @encoding
-      @text = @text.force_encoding(Storyboard.current_encoding)
+      @text = text.force_encoding(Storyboard.current_encoding)
       parse
       clean_promos
       LOG.info("Parsed subtitle file. #{count} entries found.")
@@ -117,13 +118,21 @@ class Storyboard
     end
 
 
+    def fix_encoding(l)
+      # The only  ISO8859-1  I hit so far. I expec this to grow.
+      if l.bytes.member? 233
+        l = l.unpack("C*").pack("U*")
+      end
+      l
+    end
+
     #There are some horrid files, so I want to be able to have more than just a single regex
     #to parse the srt file. Eventually, handling these errors will be a thing to do.
     def parse
       phase = :line_no
       page = nil
-
       @text.each_line {|l|
+        l = fix_encoding(l)
         l = l.strip
         #p l.bytes.to_a
         case phase
