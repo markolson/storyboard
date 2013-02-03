@@ -83,7 +83,11 @@ class Gifboard < Storyboard
     else
       puts "Multiple matches found.. pick one!"
       matches.each_with_index {|m,i|
-        puts "#{i+1}: [#{m.start_time.to_srt}] #{m.lines.join}"
+        print "#{i+1}:\t"
+        m.lines.each_with_index{|l,j|
+          print "\t" if j > 0
+          puts l
+        }
       }
       while !match
         print "choice (default 1): "
