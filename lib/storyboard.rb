@@ -98,7 +98,7 @@ class Storyboard
         begin
           # trolololol
           o = stdout.gets.split('|').inject({}){|hold,value| s = value.split('='); hold[s[0]]=s[1]; hold }
-          t = STRTime.parse(o['pkt_pts_time'])
+          t = STRTime.parse(o['pkt_pts_time'], true)
           pbar.progress = t.value
           @capture_points << t
         end while !stdout.eof?
@@ -158,12 +158,8 @@ class Storyboard
     @capture_points.each_with_index {|f,i|
       next if i >= @stop_frame
       image_name = File.join(@options[:save_directory], "%04d.jpg" % [i])
-      capture_point_subtitles = @subtitles.pages.select { |page| f.value >=  page.start_time.value and f.value <= page.end_time.value }.first
-      begin
-        @renderers.each{|r| r.render_frame(image_name, capture_point_subtitles) }
-      rescue
-        p $!
-      end
+      capture_point_subtitles = @subtitles.pages.select { |page| f.value >=  page.start_time.value and f.value <= page.end_time.value }.last
+      @renderers.each{|r| r.render_frame(image_name, capture_point_subtitles) }
       pbar.increment
     }
 

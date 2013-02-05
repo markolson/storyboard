@@ -14,7 +14,8 @@ class Storyboard
     def add_subtitle(image, subtitle, dimensions)
       offset = 0
       subtitle.lines.reverse.each_with_index {|caption,i|
-        escaped = caption.gsub('\'') {|s| "\\#{s}" }
+        escaped = caption.gsub("'", "\\'")
+        escaped = escaped.gsub('"', '\\"')
         font_size = 30
         text_width = dimensions[0] + 1
         while(text_width > (dimensions[0] * 0.9))

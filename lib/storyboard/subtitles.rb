@@ -35,7 +35,7 @@ class Storyboard
     chosen = nil
 
     if @cache.subtitles.nil?
-      LOG.info("No subtitles cache found")
+      LOG.debug("No subtitles cache found")
       @cache.subtitles = downloader.possible_urls
       @cache.save
     end
@@ -120,7 +120,7 @@ class Storyboard
 
     def fix_encoding(l)
       # The only  ISO8859-1  I hit so far. I expec this to grow.
-      if !(l.bytes.to_a |  [233,146]).empty?
+      if !(l.bytes.to_a | [233,146]).empty? && @encoding == 'UTF-8'
         l = l.unpack("C*").pack("U*")
       end
       l
@@ -160,7 +160,7 @@ class Storyboard
             @pages << page
           else
             Storyboard.needs_KFhimaji(true) if l.contains_cjk?
-            page[:lines] << l.gsub(Storyboard.encode_regexp("<\/?[^>]*>"), "")
+            page[:lines] << l.gsub(Storyboard.encode_regexp("<\/?[^>]*>"), "").encode!("UTF-8")
           end
         end
       }
@@ -169,10 +169,10 @@ class Storyboard
     # Strip out obnoxious "CREATED BY L33T DUD3" or "DOWNLOADED FROM ____" text
     def clean_promos
       @pages.delete_if {|page|
-        !page[:lines].grep(Storyboard.encode_regexp('Subtitles downloaded')).empty? ||
-        !page[:lines].grep(Storyboard.encode_regexp('addic7ed')).empty? ||
-        !page[:lines].grep(Storyboard.encode_regexp('OpenSubtitles')).empty? ||
-        !page[:lines].grep(Storyboard.encode_regexp('sync, corrected by')).empty? ||
+        !page[:lines].grep('Subtitles downloaded').empty? ||
+        !page[:lines].grep('addic7ed').empty? ||
+        !page[:lines].grep('OpenSubtitles').empty? ||
+        !page[:lines].grep('sync, corrected by').empty? ||
         false
       }
     end

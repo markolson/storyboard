@@ -3,8 +3,9 @@ class STRTime
   attr_reader :value
 
   class <<self
-    def parse(str)
-      hh,mm,ss,ms = str.scan(Storyboard.encode_regexp(REGEX)).flatten.map{|i|
+    def parse(str, skip_encode=false)
+      matcher = skip_encode ? Regexp.new(REGEX) : Storyboard.encode_regexp(REGEX)
+      hh,mm,ss,ms = str.scan(matcher).flatten.map{|i|
         Float(i.force_encoding("ASCII-8bit").delete("\000"))
       }
       value = ((((hh*60)+mm)*60)+ss) + ms/1000
