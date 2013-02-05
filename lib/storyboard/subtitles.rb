@@ -169,10 +169,10 @@ class Storyboard
     # Strip out obnoxious "CREATED BY L33T DUD3" or "DOWNLOADED FROM ____" text
     def clean_promos
       @pages.delete_if {|page|
-        !page[:lines].grep('Subtitles downloaded').empty? ||
-        !page[:lines].grep('addic7ed').empty? ||
-        !page[:lines].grep('OpenSubtitles').empty? ||
-        !page[:lines].grep('sync, corrected by').empty? ||
+        !page[:lines].grep(/Subtitles downloaded/).empty? ||
+        !page[:lines].grep(/addic7ed/).empty? ||
+        !page[:lines].grep(/OpenSubtitles/).empty? ||
+        !page[:lines].grep(/sync, corrected by/).empty? ||
         false
       }
     end
