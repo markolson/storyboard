@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Storyboard by markolson</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Storyboard</h1>
+        <p>Generate PDFs, ePUB and Mobi files from videos</p>
+
+        <p class="view"><a href="https://github.com/markolson/storyboard">View the Project on GitHub <small>markolson/storyboard</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/markolson/storyboard/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/markolson/storyboard/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/markolson/storyboard">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Storyboard</h1>
+
+<p><img src="http://i.imgur.com/lTRuC.jpg" alt="Seinfeld"></p>
+
+<p>Read the TV and Movies you don't have time to watch. Given a video file, it will generate a PDF (or soon, ePub and Mobi) containing every scene change and line of dialog.
+<a href="http://syntaxi.net/2013/01/20/storyboard">I wrote a blog post</a> with a few more details about how Storyboard works.</p>
+
+<p>Storyboard is <em>very much</em> a work in progress, though it works most of the time. Using it is simple:</p>
+
+<pre><code>$ storyboard /path/to/video-file.mkv
+</code></pre>
+
+<p>Storyboard will try to generate a file at <code>/path/to/video-file.pdf</code> containing the final product. Simiarly, you can pass in the path to a folder containing multiple files and it will output a PDF for each video it finds.</p>
+
+<pre><code>$ ls "~/TV/ShowName/Season 1"
+ShowName.1x01.EpisodeName.mkv    ShowName.1x02.AnotherEpisode.mkv    ShowName.1x03.ThirdEp.mkv
+$ storyboard "~/TV/ShowName/Season 1"
+$ ls .
+ShowName.1x01.EpisodeName.pdf    ShowName.1x02.AnotherEpisode.pdf    ShowName.1x03.ThirdEp.pdf
+</code></pre>
+
+<p>To quickly test if the subtitles that are used look ok, you can use the <code>--preview NUMBER</code> option, which generates a PDF with as many pages as you specify, defaulting to 10.</p>
+
+<pre><code>storyboard --preview /path/to/video-file.mkv
+</code></pre>
+
+<p>If the subtitles are off, you can nudge them back or forward with the <code>-n TIME</code> option. This can be positive or negative, and if you make it too large it can cause Storyboard to throw an error. This would nudge the subtitles back 2 seconds, and generate just the preview PDF.</p>
+
+<pre><code>storyboard -n -2 --preview /path/to/video-file.mkv
+</code></pre>
+
+<p>You can see all the available options by using the help option:</p>
+
+<pre><code>storyboard -h
+</code></pre>
+
+<h2>Requirements</h2>
+
+<p>The INSTALL.md file talks about requirements some more, but Storyboard requires Ruby 1.9.3, FFMpeg 1.1, and any recent version of Imagemagick. If you already have those available, just install the storyboard gem.</p>
+
+<pre><code>gem install storyboard
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/markolson">markolson</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-37187293-2 ");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
