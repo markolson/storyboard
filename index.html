@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Storyboard by markolson</title>
+    <title>Storyboard: Read your TV and Movies.</title>
 
+    <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -13,71 +14,110 @@
     <![endif]-->
   </head>
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Storyboard</h1>
-        <p>Generate PDFs, ePUB and Mobi files from videos</p>
 
-        <p class="view"><a href="https://github.com/markolson/storyboard">View the Project on GitHub <small>markolson/storyboard</small></a></p>
+    <h1>Storyboard</h1>
+    <div class="row">
+      <div id="dead" class="span5 carousel slide">
+        <div class="carousel-inner">
+          <div class="active item"> <img src="media/01.jpg" /></div>
+          <div class="item"> <img src="media/02.jpg" /></div>
+          <div class="item"> <img src="media/03.jpg" /></div>
+          <div class="item"> <img src="media/04.jpg" /></div>
+          <div class="item"> <img src="media/05.jpg" /></div>
+          <div class="item"> <img src="media/06.jpg" /></div>
+        </div>
+      </div>
 
-
-        <ul>
-          <li><a href="https://github.com/markolson/storyboard/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/markolson/storyboard/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/markolson/storyboard">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>Storyboard</h1>
-
-<p><img src="http://i.imgur.com/lTRuC.jpg" alt="Seinfeld"></p>
-
-<p>Read the TV and Movies you don't have time to watch. Given a video file, it will generate a PDF (or soon, ePub and Mobi) containing every scene change and line of dialog.
-<a href="http://syntaxi.net/2013/01/20/storyboard">I wrote a blog post</a> with a few more details about how Storyboard works.</p>
-
-<p>Storyboard is <em>very much</em> a work in progress, though it works most of the time. Using it is simple:</p>
-
-<pre><code>$ storyboard /path/to/video-file.mkv
-</code></pre>
-
-<p>Storyboard will try to generate a file at <code>/path/to/video-file.pdf</code> containing the final product. Simiarly, you can pass in the path to a folder containing multiple files and it will output a PDF for each video it finds.</p>
-
-<pre><code>$ ls "~/TV/ShowName/Season 1"
-ShowName.1x01.EpisodeName.mkv    ShowName.1x02.AnotherEpisode.mkv    ShowName.1x03.ThirdEp.mkv
-$ storyboard "~/TV/ShowName/Season 1"
-$ ls .
-ShowName.1x01.EpisodeName.pdf    ShowName.1x02.AnotherEpisode.pdf    ShowName.1x03.ThirdEp.pdf
-</code></pre>
-
-<p>To quickly test if the subtitles that are used look ok, you can use the <code>--preview NUMBER</code> option, which generates a PDF with as many pages as you specify, defaulting to 10.</p>
-
-<pre><code>storyboard --preview /path/to/video-file.mkv
-</code></pre>
-
-<p>If the subtitles are off, you can nudge them back or forward with the <code>-n TIME</code> option. This can be positive or negative, and if you make it too large it can cause Storyboard to throw an error. This would nudge the subtitles back 2 seconds, and generate just the preview PDF.</p>
-
-<pre><code>storyboard -n -2 --preview /path/to/video-file.mkv
-</code></pre>
-
-<p>You can see all the available options by using the help option:</p>
-
-<pre><code>storyboard -h
-</code></pre>
-
-<h2>Requirements</h2>
-
-<p>The INSTALL.md file talks about requirements some more, but Storyboard requires Ruby 1.9.3, FFMpeg 1.1, and any recent version of Imagemagick. If you already have those available, just install the storyboard gem.</p>
-
-<pre><code>gem install storyboard
-</code></pre>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/markolson">markolson</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+      <div class="span7">
+        <h2>Storyboard transforms your videos into other types of media.</h2>
+        <p>Make a GIF of a favorite joke from a TV show, or make a book out of a movie you love.
+          Starting with subtitles included in the video file or available online, <em>Storyboard</em> scans a video for scene changes and is able to put together a PDF that you can put
+          onto your phone or e-reader, letting you read instead of watch. The Night of the Living Dead, made in 1968 and available in the public domain because of an oversight by the distributor, makes for a pretty good example of the sort of results you can get by using Storyboard.</p>
+        <p><a href="#">You can download the 32MB PDF of the entire movie to read whenever you'd like.</a></p>
+        <p><em>Gifboard</em>, another program included with <em>Storyboard</em>, can use those same subtitles to create a GIF based on a line of dialog in the video.</p>
+      </div>
     </div>
+    <br />
+    <div class="row">
+      <div class="span12">
+        <h2>Installing</h2>
+        <p>Storyboard is still early in development, and requires more involved setup than most programs. To run it, you should be comfortable using a terminal, and you must have Ruby 1.9.3, FFmpeg 1.1, and ImageMagick installed. For OS X, the <a href="https://github.com/markolson/storyboard/blob/master/INSTALL.md">INSTALL file</a> has more step-by-step instructions, but if you've used <a href="http://mxcl.github.com/homebrew">homebrew</a> before and can install Ruby on your own, all you have to do is update homebrew's recipes so that you know you're getting the latest version of FFmpeg.</p>
+
+        <pre><code>brew update
+brew install ffmpeg imagemagick ghostscript libtool</code></pre>
+
+        <p>For linuxes, you can use your package manager to install Imagemagick, but you need to compile FFmpeg on your own until version 1.1 shows up in the repositories</p>
+        <pre><code>wget http://ffmpeg.org/releases/ffmpeg-1.1.1.tar.gz
+tar xvf ffmpeg-1.1.1.tar.gz && cd ffmpeg-1.1.1
+./configure && make && make install</code></pre>
+
+        <p>Once you have those available, simply install the gem</p>
+        <pre><code>gem install storyboard</code></pre>
+      </div>
+    </div>
+    <br />
+    <div class="row">
+      <div class="span6">
+        <h2 style="text-align: center">Using Storyboard</h2>
+
+        <p>Running <em>Storyboard</em> can be really simple:</p>
+
+        <pre><code>$ storyboard "Night of the Living Dead (1968).avi"</code></pre>
+        <br />
+        <p>Storyboard will first look for a file named <code>Night of the Living Dead (1968).srt</code> to use for subtitles, but if one doesn't exist, it will try and extract subtitles from the video, and if those don't exist, it will search online and present a list of subtitles to choose from</p>
+        <pre><code>There are multiple subtitles that could work with this file. Please choose one!
+1: 'NOTLD (1990) [Bassline].EN.srt', added 2005-03-22
+2: 'Title_02.srt', added 2009-12-28
+3: 'Night of the Living Dead (1990).sub', added 2003-02-06
+4: 'Night of the Living Dead (1990).en.srt', added 2008-02-14
+5: 'night_of_the_living_dead_English.sub', added 2002-06-03</code></pre>
+
+        <p>As it happens, "Title_02.srt" is the one we want, because people are bad at naming things. Once it downloads and checks the subtitles, Storyboard will try to generate a file at <code>"Night of the Living Dead (1968)pdf</code> in the directory you ran <em>Storyboard</em> in.
+
+
+        <p>To quickly test if the subtitles that are used look ok, you can use the <code>--preview NUMBER</code> option, which generates a PDF with as many pages as you specify. <em>Storyboard</em> skips scene detection when creating a preview, so you can see if the subtitles line up as quick as possible.</p>
+        <pre><code>storyboard --preview 25 "Night of the Living Dead (1968).avi"</code></pre>
+
+        <p>If it turns out that the subtitles are off by a few seconds, you can nudge them with the <code>-n TIME</code> option. This can be positive or negative, but right now if you make it too large it can cause Storyboard to throw an error. If you wanted to nudge the subtitles backward 2 seconds, and still get a preview, you could run the following</p>
+
+        <pre><code>storyboard -n -2 --preview 10 "Night of the Living Dead (1968).avi"</code></pre>
+
+        <p>If you have a subtitle file that you keep seperate from the video file, or you just don't follow the naming convention <em>Storyboard</em> expects right now, you can specify a file to use with the <code>-s</code> option.</p>
+
+        <pre><code>storyboard -s night.srt "Night of the Living Dead (1968).avi"</code></pre>
+
+        <p>You can see all the available options by using the help option:</p>
+        <pre><code>storyboard -h</code></pre>
+      </div>
+
+      <div class="span6">
+        <h2 style="text-align: center">Using Gifboard</h2>
+        <p><em>Gifboard</em> all the options that <em>Storyboard</em> uses, except for <code>--preview</code>, but with the addition of <code>-t</code>, which you use to search the subtitles. Any matches are shown along with the time that the line is spoken, and once selected, a GIF will be made containing only that bit of the video.</p>
+
+        <pre><code>gifboard -t "wearing a cape" "Seinfeld 6x04.avi"</code></pre>
+        <p>And then, after you choose which subtitle file to use, </p>
+        <pre><code>Multiple matches found.. pick one!
+1:  ...is he wearing a cape?
+2:  I believe he is wearing a cape.
+3:  Why was he wearing a cape?
+4:  Was my father wearing a cape?
+5:  They said you were with some guy
+    who was wearing a cape.
+6:  ...just because
+    they're wearing a cape.
+choice (default 1):</code></pre>
+        <br />
+        <img src="media/cape.gif" width="420px" />
+        <br /><br />
+        <p>I will never claim to know what options and optimizations go into making a good GIF, and so the output for <em>Gifboard</em> is at a "good enough" point for me.
+          If this is something you'd like to help improve, it would be very appreciated.</p>
+      </div>
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="javascripts/scale.fix.js"></script>
+    <script src="javascripts/bootstrap.min.js"></script>
               <script type="text/javascript">
+            $('.carousel').carousel({interval: 2000})
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
