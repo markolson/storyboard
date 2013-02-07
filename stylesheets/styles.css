@@ -12,22 +12,38 @@ p {
   font-size: 16px;
 }
 
+ul li {
+  font-size: 16px;
+}
+
+ul li p {
+  font-style: italic;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin:0 0 20px;
 }
 
+
 p, ul, ol, table, pre, dl {
-  margin:0 0 20px;
+  margin:0 20px 20px 20px;
 }
 
 h1, h2, h3 {
   line-height:1.1;
 }
 
-h1 {
+h1 a {
   font-size:45px;
+  font-weight: bold;
   color: #FEFEFE;
   text-shadow: 0.1em 0.1em 0.05em #000;
+}
+
+h1 a:hover {
+  text-decoration: none;
+  color: #FEFEFE;
+  text-shadow: 0.1em 0.1em 0.05em red;
 }
 
 h2 {
