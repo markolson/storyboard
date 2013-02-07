@@ -14,10 +14,11 @@
     <![endif]-->
   </head>
   <body>
-
+    <div class="wrapper">
     <h1>Storyboard</h1>
-    <div class="row">
-      <div id="dead" class="span5 carousel slide">
+
+    <div class="row-fluid">
+      <div id="dead" class="span5 carousel slide smallfull">
         <div class="carousel-inner">
           <div class="active item"> <img src="media/01.jpg" /></div>
           <div class="item"> <img src="media/02.jpg" /></div>
@@ -28,7 +29,9 @@
         </div>
       </div>
 
-      <div class="span7">
+      <div class="smallclear"></div>
+
+      <div class="span6 smallfull">
         <h2>Storyboard transforms your videos into other types of media.</h2>
         <p>Make a GIF of a favorite joke from a TV show, or make a book out of a movie you love.
           Starting with subtitles included in the video file or available online, <em>Storyboard</em> scans a video for scene changes and is able to put together a PDF that you can put
@@ -38,8 +41,8 @@
       </div>
     </div>
     <br />
-    <div class="row">
-      <div class="span12">
+    <div class="row-fluid">
+      <div class="span12 smallfull">
         <h2>Installing</h2>
         <p>Storyboard is still early in development, and requires more involved setup than most programs. To run it, you should be comfortable using a terminal, and you must have Ruby 1.9.3, FFmpeg 1.1, and ImageMagick installed. For OS X, the <a href="https://github.com/markolson/storyboard/blob/master/INSTALL.md">INSTALL file</a> has more step-by-step instructions, but if you've used <a href="http://mxcl.github.com/homebrew">homebrew</a> before and can install Ruby on your own, all you have to do is update homebrew's recipes so that you know you're getting the latest version of FFmpeg.</p>
 
@@ -56,8 +59,8 @@ tar xvf ffmpeg-1.1.1.tar.gz && cd ffmpeg-1.1.1
       </div>
     </div>
     <br />
-    <div class="row">
-      <div class="span6">
+    <div class="row-fluid">
+      <div class="span6 smallfull">
         <h2 style="text-align: center">Using Storyboard</h2>
 
         <p>Running <em>Storyboard</em> can be really simple:</p>
@@ -89,8 +92,8 @@ tar xvf ffmpeg-1.1.1.tar.gz && cd ffmpeg-1.1.1
         <p>You can see all the available options by using the help option:</p>
         <pre><code>storyboard -h</code></pre>
       </div>
-
-      <div class="span6">
+      <div class="smallclear"></div>
+      <div class="span6 smallfull">
         <h2 style="text-align: center">Using Gifboard</h2>
         <p><em>Gifboard</em> all the options that <em>Storyboard</em> uses, except for <code>--preview</code>, but with the addition of <code>-t</code>, which you use to search the subtitles. Any matches are shown along with the time that the line is spoken, and once selected, a GIF will be made containing only that bit of the video.</p>
 
@@ -107,26 +110,26 @@ tar xvf ffmpeg-1.1.1.tar.gz && cd ffmpeg-1.1.1
     they're wearing a cape.
 choice (default 1):</code></pre>
         <br />
-        <img src="media/cape.gif" width="420px" />
+        <img src="media/cape.gif" />
         <br /><br />
         <p>I will never claim to know what options and optimizations go into making a good GIF, and so the output for <em>Gifboard</em> is at a "good enough" point for me.
           If this is something you'd like to help improve, it would be very appreciated.</p>
       </div>
     </div>
+  </div>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <script src="javascripts/scale.fix.js"></script>
     <script src="javascripts/bootstrap.min.js"></script>
-              <script type="text/javascript">
-            $('.carousel').carousel({interval: 2000})
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-37187293-2 ");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
+    <script type="text/javascript">
+      $('.carousel').carousel({interval: 2000})
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+      try {
+      var pageTracker = _gat._getTracker("UA-37187293-2 ");
+      pageTracker._trackPageview();
+      } catch(err) {}
+    </script>
 
   </body>
 </html>
