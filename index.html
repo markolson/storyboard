@@ -81,7 +81,7 @@ tar xvf ffmpeg-1.1.1.tar.gz && cd ffmpeg-1.1.1
         <p>To quickly test if the subtitles that are used look ok, you can use the <code>--preview NUMBER</code> option, which generates a PDF with as many pages as you specify. <em>Storyboard</em> skips scene detection when creating a preview, so you can see if the subtitles line up as quick as possible.</p>
         <pre><code>storyboard --preview 25 "Night of the Living Dead (1968).avi"</code></pre>
 
-        <p>If it turns out that the subtitles are off by a few seconds, you can nudge them with the <code>-n TIME</code> option. This can be positive or negative, but right now if you make it too large it can cause Storyboard to throw an error. If you wanted to nudge the subtitles backward 2 seconds, and still get a preview, you could run the following</p>
+        <p>If it turns out that the subtitles are off by a few seconds, you can nudge them with the <code>-n TIME</code> option. This can be positive or negative, but right now if you make it too large it can cause <em>Storyboard</em> to throw an error. If you wanted to nudge the subtitles backward 2 seconds, and still get a preview, you could run the following</p>
 
         <pre><code>storyboard -n -2 --preview 10 "Night of the Living Dead (1968).avi"</code></pre>
 
@@ -95,7 +95,7 @@ tar xvf ffmpeg-1.1.1.tar.gz && cd ffmpeg-1.1.1
       <div class="smallclear"></div>
       <div class="span6 smallfull">
         <h2 style="text-align: center">Using Gifboard</h2>
-        <p><em>Gifboard</em> all the options that <em>Storyboard</em> uses, except for <code>--preview</code>, but with the addition of <code>-t</code>, which you use to search the subtitles. Any matches are shown along with the time that the line is spoken, and once selected, a GIF will be made containing only that bit of the video.</p>
+        <p>Gifboard has all the options that <em>Storyboard</em> uses, except for <code>--preview</code>, but with the addition of <code>-t</code>, which you use to search the subtitles. Any matches are shown along with the time that the line is spoken, and once selected, a GIF will be made containing only that bit of the video.</p>
 
         <pre><code>gifboard -t "wearing a cape" "Seinfeld 6x04.avi"</code></pre>
         <p>And then, after you choose which subtitle file to use, </p>
@@ -114,6 +114,14 @@ choice (default 1):</code></pre>
         <br /><br />
         <p>I will never claim to know what options and optimizations go into making a good GIF, and so the output for <em>Gifboard</em> is at a "good enough" point for me.
           If this is something you'd like to help improve, it would be very appreciated.</p>
+      </div>
+    </div>
+
+    <div class="row-fluid">
+      <div class="span12 smallfull">
+        <h2>Contributing</h2>
+        <p>There are a lot of ways you can help improve <em>Storyboard</em>! If you're ambitious, you can write or fix up the code by forking the repository on github and submitting pull requests for your changes. I wrote a little bit more about the workins of <em>Storyboard</em> in a <a href="http://syntaxi.net/2013/01/20/storyboard">blog post</a>, but more documentation could definitely help if that's more your thing.</p>
+        <p>Even just an email (<a href="mailto:theothermarkolson@gmail.com">theothermarkolson@gmail.com</a>) or tweet (<a href="https://twitter.com/mark_olson">@mark_olson</a>) saying that it worked - or didn't - can be helpful.
       </div>
     </div>
   </div>
