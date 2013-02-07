@@ -1,0 +1,59 @@
+PATH
+  remote: .
+  specs:
+    storyboard (0.5.0)
+      bundler
+      levenshtein-ffi
+      mime-types (>= 1.19)
+      mini_magick
+      path (>= 1.3.0)
+      prawn
+      ruby-progressbar
+      rubyzip
+      term-ansicolor
+
+PATH
+  remote: vendor/suby
+  specs:
+    suby (0.4.0)
+      mime-types (>= 1.19)
+      path (>= 1.3.0)
+      rubyzip
+      term-ansicolor
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    Ascii85 (1.0.2)
+    afm (0.2.0)
+    ffi (1.1.5)
+    hashery (2.1.0)
+    levenshtein-ffi (1.0.3)
+      ffi
+      ffi (~> 1.1.5)
+    mime-types (1.20.1)
+    mini_magick (3.4)
+      subexec (~> 0.2.1)
+    path (1.3.1)
+    pdf-reader (1.3.0)
+      Ascii85 (~> 1.0.0)
+      afm (~> 0.2.0)
+      hashery (~> 2.0)
+      ruby-rc4
+      ttfunk
+    prawn (0.12.0)
+      pdf-reader (>= 0.9.0)
+      ttfunk (~> 1.0.2)
+    ruby-progressbar (1.0.2)
+    ruby-rc4 (0.1.5)
+    rubyzip (0.9.9)
+    subexec (0.2.2)
+    term-ansicolor (1.0.7)
+    ttfunk (1.0.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  storyboard!
+  suby!

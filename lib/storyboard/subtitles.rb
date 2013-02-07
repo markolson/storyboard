@@ -1,5 +1,4 @@
 require 'pp'
-require 'iconv'
 
 class Storyboard
   def get_subtitles

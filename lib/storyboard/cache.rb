@@ -24,10 +24,10 @@ class Storyboard
 
 		def download_file(url, &block)
 			if @data['downloads'][url]
-				LOG.info("Cached file #{@data['downloads'][url]}")
+				LOG.debug("Cached file #{@data['downloads'][url]}")
 				return File.read(@data['downloads'][url])
 			else
-				LOG.info("Loading file from #{url}")
+				LOG.debug("Loading file from #{url}")
 				results = yield
 				subpath = File.join(Dir.tmpdir, "#{@hash}-#{Digest::SHA1.hexdigest(url)}.storyboard")
 				File.open(subpath, 'w') { |f| f.write(results) }
