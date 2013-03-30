@@ -19,8 +19,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'bundler'
   gem.add_dependency 'mini_magick'
   gem.add_dependency 'prawn'
-  gem.add_dependency 'ruby-progressbar'
-  gem.add_dependency 'levenshtein-ffi'
+  gem.add_dependency 'progressbar'
 
   # suby stuff.
   gem.add_dependency 'path', '>= 1.3.0'

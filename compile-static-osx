@@ -1,0 +1,32 @@
+export CC=clang
+
+DISK_ID=$(hdid -nomount ram://2097152) 
+newfs_hfs -v Ramdisk ${DISK_ID} 
+diskutil mount ${DISK_ID}  
+
+MES=~/Packages/ 
+TARGET="/Volumes/Ramdisk/sw" 
+CMPL="/Volumes/Ramdisk/compile"
+
+mkdir ${TARGET} 
+mkdir ${CMPL}
+
+export PATH=${TARGET}/bin:$PATH
+
+cd ${CMPL} 
+cd xvidcore 
+cd build/generic 
+./configure --prefix=${TARGET} --disable-shared --enable-static && make -j 4 && make install 
+rm ${TARGET}/lib/libxvidcore.4.dylib
+
+cd ${CMPL} 
+cd x264-snapshot-* 
+./configure --prefix=${TARGET} --disable-shared --enable-static && make -j 4 && make install && make install-lib-static
+
+
+cd ${CMPL} 
+tar xjpf ${MES}/ffmpeg-* 
+cd ffmpeg* 
+export LDFLAGS="-L${TARGET}/lib" 
+export CFLAGS="-I${TARGET}/include" 
+./configure --prefix=${TARGET} --enable-gpl --enable-pthreads --enable-version3 --enable-libspeex --enable-libvpx --disable-decoder=libvpx --enable-libmp3lame --enable-libtheora --enable-libvorbis --enable-libx264 --enable-avfilter --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-filters --enable-libgsm --arch=x86_64 --enable-runtime-cpudetect && make -j 4 && make install

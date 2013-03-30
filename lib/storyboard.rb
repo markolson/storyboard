@@ -92,14 +92,16 @@ class Storyboard
   end
 
   def run_scene_detection
-    pbar = ProgressBar.create(:title => " Analyzing Video", :format => '%t [%B] %e', :total => @length, :smoothing => 0.6)
+    pbar = ProgressBar.create(:title => " Analyzing Video", :total => @length)
+    pbar.format => '%t [%B] %e'
+    pbar.long_running = true
     bin = File.join(File.dirname(__FILE__), '../bin/storyboard-ffprobe')
     Open3.popen3('ffprobe', "-show_frames", "-of", "compact=p=0", "-f", "lavfi", %(movie=#{options[:file]},select=gt(scene\\,.30)), "-pretty") {|stdin, stdout, stderr, wait_thr|
         begin
           # trolololol
           o = stdout.gets.split('|').inject({}){|hold,value| s = value.split('='); hold[s[0]]=s[1]; hold }
           t = STRTime.parse(o['pkt_pts_time'], true)
-          pbar.progress = t.value
+          pbar.set = t.value
           @capture_points << t
         end while !stdout.eof?
     }
@@ -126,7 +128,9 @@ class Storyboard
 
   def extract_frames
     pool = Thread::Pool.new(2)
-    pbar = ProgressBar.create(:title => " Extracting Frames", :format => '%t [%c/%C|%B] %e', :total => @stop_frame )
+    pbar = ProgressBar.create(:title => " Extracting Frames", :total => @stop_frame )
+    pbar.format => '%t [%B] %e'
+    pbar.long_running = true
 
     @capture_points.each_with_index {|f,i|
       if i >= @stop_frame
@@ -140,7 +144,7 @@ class Storyboard
       # should make Frame a struct with idx and subs
       image_name = File.join(@options[:save_directory], "%04d.jpg" % [i])
       pool.process {
-        pbar.increment
+        pbar.inc
         cmd = ["ffmpeg", "-ss", (f + seek_primer).to_srt, "-i", %("#{options[:file]}"), "-vframes 1", "-ss", STRTime.new(seek_primer.abs).to_srt, %("#{image_name}")].join(' ')
         Open3.popen3(cmd){|stdin, stdout, stderr, wait_thr|
           # block the output so it doesn't quit immediately
@@ -154,13 +158,15 @@ class Storyboard
   end
 
   def render_output
-    pbar = ProgressBar.create(:title => " Rendering Output", :format => '%t [%c/%C|%B] %e', :total => ( @options[:preview] || @capture_points.count ))
+    pbar = ProgressBar.create(:title => " Rendering Output", :total => ( @options[:preview] || @capture_points.count ))
+    pbar.format => '%t [%B] %e'
+    pbar.long_running = true
     @capture_points.each_with_index {|f,i|
       next if i >= @stop_frame
       image_name = File.join(@options[:save_directory], "%04d.jpg" % [i])
       capture_point_subtitles = @subtitles.pages.select { |page| f.value >=  page.start_time.value and f.value <= page.end_time.value }.last
       @renderers.each{|r| r.render_frame(image_name, capture_point_subtitles) }
-      pbar.increment
+      pbar.inc
     }
 
     @renderers.each {|r| r.write }
