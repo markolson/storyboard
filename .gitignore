@@ -7,3 +7,4 @@
 *.xml*
 *.gif
 .DS_Store
+Gemfile.lock
