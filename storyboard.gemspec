@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "escort"
+  spec.add_dependency "micro-optparse"
   spec.add_dependency "prawn"
   spec.add_dependency "titlekit"
 

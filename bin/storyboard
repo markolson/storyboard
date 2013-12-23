@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+require 'bundler'
+Bundler.require
+$: << File.expand_path(File.join(__FILE__, "..", ".."))
+
+require 'storyboard'
+require 'trollop'
+
+book = Trollop::Parser.new do
+  version "Storyboard 0.4.0"
+  banner <<-EOS
+Make you some PDFs and ePUBs out of videos.
+
+Usage:
+       storyboard [options] <video file> <output directory> 
+where [options] are:
+EOS
+
+	opt :skip_scene_detection, "Skip scene detection", :short => '-k', :long => '--skip-scene-detection', :type => :boolean, :default => false
+	opt :keep_colors, "Keep Colors", :long => '--colors', :type => :boolean, :default => false
+	opt :format, "Output format", :short => '-f', :long => '--format', :type => :string, :multi => true
+end
+
+
+opts = Trollop::with_standard_exception_handling book do
+	Storyboard::CLI.global_options(book)
+	o = book.parse ARGV
+	raise Trollop::HelpNeeded if ARGV.empty? # show help screen
+	o
+end
