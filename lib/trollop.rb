@@ -339,7 +339,7 @@ class Parser
 
     ## check for version and help args
     raise VersionNeeded if given_args.include? :version
-    raise HelpNeeded if (given_args.include?(:help) || given_args.empty?)
+    raise HelpNeeded if given_args.include? :help
 
     ## check constraint satisfaction
     @constraints.each do |type, syms|
@@ -426,11 +426,10 @@ class Parser
     width # hack: calculate it now; otherwise we have to be careful not to
           # call this unless the cursor's at the beginning of a line.
     left = {}
+    cols = {}
     @specs.each do |name, spec|
-      left[name] = "--#{spec[:long]}" +
-        (spec[:type] == :flag && spec[:default] ? ", --no-#{spec[:long]}" : "") +
-        (spec[:short] && spec[:short] != :none ? ", -#{spec[:short]}" : "") +
-        case spec[:type]
+
+      s_type = case spec[:type]
         when :flag; ""
         when :int; " <i>"
         when :ints; " <i+>"
@@ -442,11 +441,20 @@ class Parser
         when :ios; " <filename/uri+>"
         when :date; " <date>"
         when :dates; " <date+>"
-        end
+      end
+
+      cols[name] = [
+        (spec[:short] && spec[:short] != :none ? "-#{spec[:short]}" : ""),
+        (spec[:type] == :flag && spec[:default] ? "--#{spec[:long]}; --no-#{spec[:long]}" : "--#{spec[:long]}"),
+        (spec[:ex] ? "[#{spec[:ex]}]" : ""),
+        s_type
+      ]
     end
 
-    leftcol_width = left.values.map { |s| s.length }.max || 0
-    rightcol_start = leftcol_width + 6 # spaces
+    widths = (0..3).map {|index|
+      cols.max_by{|x| x[1][index].length }[1][index].length
+    }
+    
 
     unless @order.size > 0 && @order.first.first == :text
       stream.puts "#@version\n" if @version
@@ -460,7 +468,7 @@ class Parser
       end
 
       spec = @specs[opt]
-      stream.printf "  %#{leftcol_width}s:   ", left[opt]
+      stream.printf "    %-#{widths[0]+2}s %-#{widths[1]+2}s %#{widths[2]+2}s -  ", *cols[opt]
       desc = spec[:desc] + begin
         default_s = case spec[:default]
         when $stdout; "<stdout>"
@@ -482,7 +490,7 @@ class Parser
           ""
         end
       end
-      stream.puts wrap(desc, :width => width - rightcol_start - 1, :prefix => rightcol_start)
+      stream.puts wrap(desc)
     end
   end
 
