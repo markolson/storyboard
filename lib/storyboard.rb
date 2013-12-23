@@ -2,6 +2,7 @@ module Storyboard
   autoload :VERSION,              "storyboard/version"
   autoload :CLI,                  "storyboard/cli"
 
+  autoload :Requirements,         "storyboard/requirements"
   autoload :Video,                "storyboard/video"
 
   module Collectors

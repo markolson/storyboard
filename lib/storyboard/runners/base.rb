@@ -1,6 +1,9 @@
 module Storyboard::Runners
   class Base
-    attr_accessor :ui, :options
+    attr_reader :ui, :options
+
+    attr_reader :video, :subtitles
+
     def self.run(options, ui=Storyboard::UI::Console)
       self.new(options,ui).run
     end

@@ -1,3 +1,4 @@
+binaries/
 *.gem
 *.rbc
 .bundle

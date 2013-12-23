@@ -3,6 +3,5 @@ module Storyboard::Runners
     def run
       p @options
     end
-
   end
 end
