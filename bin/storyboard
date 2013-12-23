@@ -16,17 +16,18 @@ Usage:
 
 where [options] are:
 EOS
+end
 
-	opt :skip_scene_detection, "Skip scene detection", :short => '-k', :long => '--skip-scene-detection', :type => :boolean, :default => false
-	opt :keep_colors, "Keep Colors", :long => '--colors', :type => :boolean, :default => false
-	opt :format, "Output format", :short => '-f', :long => '--format', :type => :strings, :default => ['pdf', 'epub']
+Storyboard::CLI.options(book) do |set|
+  set.opt :skip_scene_detection, "Skip scene detection", :short => '-k', :long => '--skip-scene-detection', :type => :boolean, :default => false
+  set.opt :keep_colors, "Keep Colors", :long => '--colors', :type => :boolean, :default => false
+  set.opt :format, "Output format", :short => '-f', :long => '--format', :type => :strings, :default => ['pdf', 'epub']
 end
 
 opts = Trollop::with_standard_exception_handling book do
-	Storyboard::CLI.global_options(book)
-	o = book.parse ARGV
-	raise Trollop::HelpNeeded if ARGV.empty? # show help screen
-	o
+  o = book.parse ARGV
+  raise Trollop::HelpNeeded if ARGV.empty?
+  o
 end
 
 p opts

@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+require 'bundler'
+Bundler.require
+$: << File.expand_path(File.join(__FILE__, "..", ".."))
+
+require 'storyboard'
+require 'trollop'
+
+gif = Trollop::Parser.new do
+  version "Gifboard 0.4.0"
+  banner <<-EOS
+Make you some GIFs out of videos.
+
+Usage:
+       gifbook [options] VIDEOFILE [output directory]
+
+where [options] are:
+EOS
+end
+
+Storyboard::CLI.options(gif) do |set|
+  set.opt :colors, "Maximum # Of Colors", :long => '--colors', :type => :int
+  set.opt :find_text, "Search for Text", :short => "-f", :long => "--find-text", :type => :string
+  set.opt :use_first_text_match, "Use the first text match", :long => "--use-first-match", :default => false
+  set.opt :use_text, "Overlay text", :short => "-t", :long => "--use-text", :type => :string
+  set.depends :use_text, :start_time, :end_time
+end
+
+opts = Trollop::with_standard_exception_handling gif do
+  o = gif.parse ARGV
+  raise Trollop::HelpNeeded if ARGV.empty?
+  o
+end
+Storyboard::Runners::Gif.run(opts.merge({'_paths' => ARGV}))
