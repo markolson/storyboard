@@ -1,5 +1,6 @@
 require 'json'
 require 'logger'
+require 'tmpdir'
 require 'shellwords'
 
 module Storyboard

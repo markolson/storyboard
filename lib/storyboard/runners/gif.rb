@@ -1,21 +1,17 @@
 module Storyboard::Runners
   class Gif < Storyboard::Runners::Base
     def run
-      p @options
-
       # do secondary checks.
       raise Trollop::CommandlineError, "--use_first_text_match requires --find-text" if @options[:use_first_text_match] && @options[:find_text].nil?
       
       @extractor = Storyboard::Extractor::Range.new(self)
         
       if @options[:use_text_given]
-        start_time = ts_to_s(@options[:start_time])
-        end_time = ts_to_s(@options[:end_time])
+        @extractor.start = start_time = ts_to_s(@options[:start_time])
+        @extractor.stop = end_time = ts_to_s(@options[:end_time])
         raise Trollop::CommandlineError, "--start cannot be further than --end" if start_time >= end_time
       
-        p @video.framerate
-        p start_time
-        p end_time
+        @extractor.fps = @video.framerate_r(2)
       else
         raise Trollop::CommandlineError "only -t for now."
       end
@@ -27,6 +23,8 @@ module Storyboard::Runners
       # OR try to find one to download
 
       # If we downloaded one, check for the text.
+
+      @extractor.run
     end
 
     def name

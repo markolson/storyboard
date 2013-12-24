@@ -1,8 +1,10 @@
 module Storyboard::Runners
   class Base
-    attr_reader :ui, :options, :parser
+    attr_reader :ui, :options, :parser, :workdirectory
 
     attr_reader :video, :subtitles
+
+    attr_reader :filters
 
     def self.run(parser, options, ui=Storyboard::UI::Console)
       Storyboard::Binaries.check
@@ -19,14 +21,29 @@ module Storyboard::Runners
       assign_paths
 
       @ui.log("Will be saving files to #{@options['_output_director']}")
+
       @video = Storyboard::Video.new(self)
+      @filters = []
+      @workdirectory = Dir.mktmpdir
+
+      at_exit do
+        @ui.log("Cleaning up #{@workdirectory}")
+        FileUtils.remove_entry @workdirectory
+      end
     end
 
     def run
       raise NotImplementedError
     end
 
-
+    def build_ffmpeg_command(params={})
+      parts =  ["-v", "quiet", "-y"]
+      parts += params[:pre] || []
+      parts += ["-i", @video.path]
+      parts += ["-vf", @filters.join(',')]
+      parts += params[:post] || []
+      parts += [File.join(@workdirectory, params[:filename]) || []]
+    end
 
     private
     def ts_to_s(timecode)

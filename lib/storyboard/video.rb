@@ -11,6 +11,14 @@ module Storyboard
       parent.ui.log("#{File.basename(@path)} is #{@width}x#{@height}", Logger::DEBUG)
     end
 
+    def framerate_f(bump=1)
+      (framerate[0]/(bump * framerate[1].to_f)).round(3)
+    end
+
+    def framerate_r(bump=1)
+      "#{framerate[0]}/#{(bump * framerate[1])}"
+    end
+
     private
     def run_basic_probe
       @raw_data = JSON.parse(Storyboard::Binaries.ffprobe("-v", "quiet", "-of", "json", "-show_streams", "-show_format", @path))
@@ -19,7 +27,7 @@ module Storyboard
       video = @raw_data['streams'].detect {|s| s['codec_type'] == 'video' }
       @height = video['height'].to_i
       @width = video['width'].to_i
-      @framerate = video['r_frame_rate']
+      @framerate = video['r_frame_rate'].split('/').map(&:to_i)
     end
   end
 end
