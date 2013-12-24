@@ -24,7 +24,19 @@ module Storyboard::Runners
 
       @video = Storyboard::Video.new(self)
       @filters = []
+
+      if @options[:dimensions_given]
+        width, height = @video.width, nil
+        if @options[:dimensions].end_with?('%')
+          width = (@options[:dimensions].to_i / 100.to_f) * @video.width
+        else
+          width, height = @options[:dimensions].split('x')
+        end
+        @filters << "scale=#{width}:#{height || -1}"
+      end
+      # "/Users/mark/Downloads/out/" || 
       @workdirectory = Dir.mktmpdir
+      #{}`rm /Users/mark/Downloads/out/*`
 
       at_exit do
         @ui.log("Cleaning up #{@workdirectory}")

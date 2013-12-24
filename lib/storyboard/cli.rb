@@ -8,7 +8,7 @@ module Storyboard
       opts.opt :end_time, "End Time", long: "--end", :type => :string, ex: 'HH:MM:SS.ms'
 
       opts.opt :quality, "Output Quality", :long => '--quality', :type => :string, ex: '75%'
-      opts.opt :dimensions, "Output Dimensions", short: '-d', long: '--output-size', type: :string, ex: '1080x720'
+      opts.opt :dimensions, "Output Dimensions", short: '-d', long: '--output-size', type: :string, ex: '1080x720 or 50%'
       opts.opt :preview, "Preview", :long => '--preview', :type => :int, default: 10
 
       block.call(opts)

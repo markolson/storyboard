@@ -1,5 +1,6 @@
 binaries/
 *.gem
+*.gif
 *.rbc
 .bundle
 .config
