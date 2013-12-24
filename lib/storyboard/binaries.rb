@@ -1,7 +1,9 @@
-require 'shellwords'
-
 module Storyboard
-  class Requirements
+  class Binaries
+
+    @@ffmpeg = nil
+    @@ffprobe = nil
+    @@convert = nil
 
     URLS = {
       'ffmpeg' => false,
@@ -9,6 +11,24 @@ module Storyboard
       'gifsicle' => false,
       'convert' => false
     }
+
+    def self.ffmpeg(args)
+      %x(#{Shellwords.join([@@ffmpeg, *args])})
+    end
+
+    def self.ffprobe(*args)
+      %x(#{Shellwords.join([@@ffprobe, *args])})
+    end
+
+    def self.convert(*args)
+      %x(#{Shellwords.join([@@convert, *args])})
+    end
+
+    def self.check
+      raise Exception.new("ffmpeg not found. Requires at least 2.1") unless has_ffmpeg?(nil, '2.1')
+      raise Exception.new("ffprobe not found. Requires at least 2.1") unless has_ffprobe?(nil, '2.1')
+      raise Exception.new("convert not found. Requires at least 6.8") unless has_convert?(nil, '6.8')
+    end
 
     def self.binpath
       File.expand_path(File.join(__FILE__, "..", "..", "..", "binaries"))
@@ -33,19 +53,19 @@ module Storyboard
         return self.has?(name, param, self.binpath, version, scan_for) if found_version.none?
         acceptable = Gem::Dependency.new(name, "~> #{version}").match?(name, found_version[0][0])
         return self.has?(name, param, self.binpath, version, scan_for) if not acceptable
-        return true
+        return final_path
       else
         return false if found_version.none?
-        return Gem::Dependency.new(name, "~> #{version}").match?(name, found_version[0][0])
+        return final_path if Gem::Dependency.new(name, "~> #{version}").match?(name, found_version[0][0])
       end
     end
 
     def self.has_ffmpeg?(path=nil, version='2.1')
-      self.has?("ffmpeg", "-version", nil, version, /ffmpeg version (\d.\d.\d)/)
+      @@ffmpeg = self.has?("ffmpeg", "-version", nil, version, /ffmpeg version (\d.\d.\d)/)
     end
 
     def self.has_ffprobe?(path=nil, version='2.1')
-      self.has?("ffprobe", "-version", path, version, /ffprobe version (\d.\d.\d)/)
+      @@ffprobe = self.has?("ffprobe", "-version", path, version, /ffprobe version (\d.\d.\d)/)
     end
 
     def self.has_gifsicle?(path=nil, version='1.7')
@@ -53,7 +73,7 @@ module Storyboard
     end
 
     def self.has_convert?(path=nil, version='6.8')
-      self.has?("convert", "--version", path, version, /ImageMagick (\d.\d+)/)
+      @@convert = self.has?("convert", "--version", path, version, /ImageMagick (\d.\d+)/)
     end    
   end
 end

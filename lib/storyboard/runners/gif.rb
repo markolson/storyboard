@@ -1,7 +1,11 @@
 module Storyboard::Runners
   class Gif < Storyboard::Runners::Base
     def run
-      p @options
+      
+    end
+
+    def name
+    	"Gifboard"
     end
   end
 end

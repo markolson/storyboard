@@ -28,7 +28,7 @@ end
 
 opts = Trollop::with_standard_exception_handling gif do
   o = gif.parse ARGV
-  raise Trollop::HelpNeeded if ARGV.empty?
+  raise Trollop::HelpNeeded if ARGV.empty? || ARGV.length > 2
   o
 end
-Storyboard::Runners::Gif.run(opts.merge({'_paths' => ARGV}))
+Storyboard::Runners::Gif.run(opts)

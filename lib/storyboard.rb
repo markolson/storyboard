@@ -1,8 +1,12 @@
+require 'json'
+require 'logger'
+require 'shellwords'
+
 module Storyboard
   autoload :VERSION,              "storyboard/version"
   autoload :CLI,                  "storyboard/cli"
 
-  autoload :Requirements,         "storyboard/requirements"
+  autoload :Binaries,             "storyboard/binaries"
   autoload :Video,                "storyboard/video"
 
   module Collectors
