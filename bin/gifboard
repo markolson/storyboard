@@ -23,12 +23,16 @@ Storyboard::CLI.options(gif) do |set|
   set.opt :find_text, "Search for Text", :short => "-f", :long => "--find-text", :type => :string
   set.opt :use_first_text_match, "Use the first text match", :long => "--use-first-match", :default => false
   set.opt :use_text, "Overlay text", :short => "-t", :long => "--use-text", :type => :string
+
   set.depends :use_text, :start_time, :end_time
+  
+  set.conflicts :find_text, :use_text
+  set.conflicts :subtitle_path, :use_text
 end
 
-opts = Trollop::with_standard_exception_handling gif do
+Trollop::with_standard_exception_handling gif do
   o = gif.parse ARGV
   raise Trollop::HelpNeeded if ARGV.empty? || ARGV.length > 2
   o
+  Storyboard::Runners::Gif.run(gif, o)
 end
-Storyboard::Runners::Gif.run(opts)

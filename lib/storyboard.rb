@@ -9,12 +9,7 @@ module Storyboard
   autoload :Binaries,             "storyboard/binaries"
   autoload :Video,                "storyboard/video"
 
-  module Collectors
-    autoload :Scenes,             "storyboard/extractors/scenes.rb"
-    autoload :Subtitles,          "storyboard/extractors/subtitles.rb"
-  end
-
-  module Extractors
+  module Extractor
     autoload :Timestamps,         "storyboard/extractors/timestamps.rb"
     autoload :Range,              "storyboard/extractors/range.rb"
   end

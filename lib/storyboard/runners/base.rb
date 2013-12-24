@@ -1,21 +1,23 @@
 module Storyboard::Runners
   class Base
-    attr_reader :ui, :options
+    attr_reader :ui, :options, :parser
 
     attr_reader :video, :subtitles
 
-    def self.run(options, ui=Storyboard::UI::Console)
+    def self.run(parser, options, ui=Storyboard::UI::Console)
       Storyboard::Binaries.check
       # catch exceptions from the above, and prompt to install if 
       # there are known good options.
-      self.new(options,ui).run
+      self.new(parser,options,ui).run
     end
 
-    def initialize(options, ui=Storyboard::UI::Console)
+    def initialize(parser, options, ui=Storyboard::UI::Console)
       @options = options
       @ui = ui.new(self)
+      @parser = parser
 
       assign_paths
+
       @ui.log("Will be saving files to #{@options['_output_director']}")
       @video = Storyboard::Video.new(self)
     end
@@ -24,7 +26,17 @@ module Storyboard::Runners
       raise NotImplementedError
     end
 
+
+
     private
+    def ts_to_s(timecode)
+      tot = 0
+      sixes, ms = timecode.split('.')
+      times = sixes.split(':').map(&:to_i).reverse.each_with_index{|v,i| tot += (60**i) * v }
+      tot += (ms.to_i / 100.0)
+      tot
+    end
+
     def assign_paths
       while not ARGV.empty? do
         last_arg = File.expand_path(ARGV.pop)
@@ -33,7 +45,7 @@ module Storyboard::Runners
         elsif File.file?(last_arg) && File.readable?(last_arg)
           @options['_video'] = last_arg
         end
-        @options['_output_director'] = Dir.pwd
+        @options['_output_director'] ||= Dir.pwd
       end
 
     end
