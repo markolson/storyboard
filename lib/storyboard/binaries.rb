@@ -13,8 +13,8 @@ module Storyboard
     }
 
     def self.ffmpeg(args)
-      print Shellwords.join([@@ffmpeg, *args]) +"\n"
-      %x(#{Shellwords.join([@@ffmpeg, *args])})
+      print "FONTCONFIG_PATH=./resources/fonts/ "  + Shellwords.join([@@ffmpeg, *args]) +"\n"
+      %x(FONTCONFIG_PATH=./resources/fonts/ #{Shellwords.join([@@ffmpeg, *args])})
     end
 
     def self.ffprobe(*args)
@@ -22,6 +22,7 @@ module Storyboard
     end
 
     def self.convert(*args)
+      print Shellwords.join([@@convert, *args]) +"\n"
       %x(#{Shellwords.join([@@convert, *args])})
     end
 
@@ -32,7 +33,7 @@ module Storyboard
     end
 
     def self.binpath
-      File.expand_path(File.join(__FILE__, "..", "..", "..", "binaries"))
+      File.expand_path(File.join(__FILE__, "..", "..", "..", "resources", "binaries"))
     end
 
     def self.has_path?(name)

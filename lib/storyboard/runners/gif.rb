@@ -12,6 +12,10 @@ module Storyboard::Runners
         raise Trollop::CommandlineError, "--start cannot be further than --end" if start_time >= end_time
       
         @extractor.fps = @video.framerate_r(2)
+
+        @sub = Storyboard::Subtitles::Base.new(self)
+        @sub.add_line(start_time, end_time, options[:use_text])
+        @sub.write
       else
         raise Trollop::CommandlineError "only -t for now."
       end
@@ -25,6 +29,8 @@ module Storyboard::Runners
       # If we downloaded one, check for the text.
 
       @extractor.run
+
+      @gif = Storyboard::Builder::GIF.new(self).run(@extractor.format)
     end
 
     def name

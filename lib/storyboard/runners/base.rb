@@ -1,10 +1,12 @@
 module Storyboard::Runners
   class Base
-    attr_reader :ui, :options, :parser, :workdirectory
+    attr_reader :ui, :options, :parser, :workdirectory, :extractor
 
     attr_reader :video, :subtitles
 
-    attr_reader :filters
+    attr_reader :start_time, :end_time
+
+    attr_reader :filters, :pre, :post
 
     def self.run(parser, options, ui=Storyboard::UI::Console)
       Storyboard::Binaries.check
@@ -23,7 +25,10 @@ module Storyboard::Runners
       @ui.log("Will be saving files to #{@options['_output_director']}")
 
       @video = Storyboard::Video.new(self)
-      @filters = []
+      @pre, @post, @filters = [], [], []
+
+      @start_time = ts_to_s(@options[:start_time])
+      @end_time = ts_to_s(@options[:end_time])
 
       if @options[:dimensions_given]
         width, height = @video.width, nil
@@ -34,9 +39,8 @@ module Storyboard::Runners
         end
         @filters << "scale=#{width}:#{height || -1}"
       end
-      # "/Users/mark/Downloads/out/" || 
+      
       @workdirectory = Dir.mktmpdir
-      #{}`rm /Users/mark/Downloads/out/*`
 
       at_exit do
         @ui.log("Cleaning up #{@workdirectory}")
@@ -50,10 +54,11 @@ module Storyboard::Runners
 
     def build_ffmpeg_command(params={})
       parts =  ["-v", "quiet", "-y"]
-      parts += params[:pre] || []
+      #parts =  ["-y"]
+      parts += (params[:pre] || []) + @pre
       parts += ["-i", @video.path]
       parts += ["-vf", @filters.join(',')]
-      parts += params[:post] || []
+      parts += (params[:post] || []) + @post
       parts += [File.join(@workdirectory, params[:filename]) || []]
     end
 

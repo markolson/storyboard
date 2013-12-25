@@ -3,4 +3,5 @@ source 'https://rubygems.org'
 
 # Specify your gem's dependencies in storyboard.gemspec
 gem 'titlekit', path: '~/Code/titlekit'
+gem 'subdb'
 gemspec
