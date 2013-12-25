@@ -22,7 +22,7 @@ Storyboard::CLI.options(gif) do |set|
   set.opt :colors, "Maximum # Of Colors", :long => '--colors', :type => :int
   set.opt :find_text, "Search for Text", :short => "-f", :long => "--find-text", :type => :string
   set.opt :use_first_text_match, "Use the first text match", :long => "--use-first-match", :default => false
-  set.opt :use_text, "Overlay text", :short => "-t", :long => "--use-text", :type => :string
+  set.opt :use_text, "Overlay text", :short => "-t", :long => "--use-text", :type => :string, :multi => true
 
   set.depends :use_text, :start_time, :end_time
   

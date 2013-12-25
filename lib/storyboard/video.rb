@@ -15,6 +15,10 @@ module Storyboard
       (framerate[0]/(bump * framerate[1].to_f)).round(3)
     end
 
+    def framerate_delay(bump=1)
+      ((framerate[0]*bump)/framerate[1].to_f).to_i
+    end
+
     def framerate_r(bump=1)
       "#{framerate[0]}/#{(bump * framerate[1])}"
     end

@@ -1,12 +1,9 @@
 module Storyboard::Runners
   class Base
-    attr_reader :ui, :options, :parser, :workdirectory, :extractor
+    attr_reader :ui, :options, :parser, :workdirectory
 
-    attr_reader :video, :subtitles
-
+    attr_reader :video, :subtitles, :extractor
     attr_reader :start_time, :end_time
-
-    attr_reader :filters, :pre, :post
 
     def self.run(parser, options, ui=Storyboard::UI::Console)
       Storyboard::Binaries.check
@@ -19,28 +16,11 @@ module Storyboard::Runners
       @options = options
       @ui = ui.new(self)
       @parser = parser
-
-      assign_paths
-
-      @ui.log("Will be saving files to #{@options['_output_director']}")
+      extract_path_arguments!
 
       @video = Storyboard::Video.new(self)
-      @pre, @post, @filters = [], [], []
-
-      @start_time = ts_to_s(@options[:start_time])
-      @end_time = ts_to_s(@options[:end_time])
-
-      if @options[:dimensions_given]
-        width, height = @video.width, nil
-        if @options[:dimensions].end_with?('%')
-          width = (@options[:dimensions].to_i / 100.to_f) * @video.width
-        else
-          width, height = @options[:dimensions].split('x')
-        end
-        @filters << "scale=#{width}:#{height || -1}"
-      end
-      
       @workdirectory = Dir.mktmpdir
+      @ui.log("Will be saving files to #{@options['_output_director']}")      
 
       at_exit do
         @ui.log("Cleaning up #{@workdirectory}")
@@ -52,16 +32,6 @@ module Storyboard::Runners
       raise NotImplementedError
     end
 
-    def build_ffmpeg_command(params={})
-      parts =  ["-v", "quiet", "-y"]
-      #parts =  ["-y"]
-      parts += (params[:pre] || []) + @pre
-      parts += ["-i", @video.path]
-      parts += ["-vf", @filters.join(',')]
-      parts += (params[:post] || []) + @post
-      parts += [File.join(@workdirectory, params[:filename]) || []]
-    end
-
     private
     def ts_to_s(timecode)
       tot = 0
@@ -71,7 +41,22 @@ module Storyboard::Runners
       tot
     end
 
-    def assign_paths
+    def pull_options!
+      @start_time = ts_to_s(@options[:start_time]) if @options[:start_time_given]
+      @end_time = ts_to_s(@options[:end_time]) if @options[:end_time_given]
+
+      if @options[:dimensions_given]
+        width, height = @video.width, nil
+        if @options[:dimensions].end_with?('%')
+          width = (@options[:dimensions].to_i / 100.to_f) * @video.width
+        else
+          width, height = @options[:dimensions].split('x')
+        end
+        @extractor.filters << "scale=#{width}:#{height || -1}"
+      end
+    end
+
+    def extract_path_arguments!
       while not ARGV.empty? do
         last_arg = File.expand_path(ARGV.pop)
         if File.directory?(last_arg) && File.writable?(last_arg)

@@ -5,10 +5,9 @@ module Storyboard::Runners
       raise Trollop::CommandlineError, "--use_first_text_match requires --find-text" if @options[:use_first_text_match] && @options[:find_text].nil?
       
       @extractor = Storyboard::Extractor::Range.new(self)
+      pull_options!
         
       if @options[:use_text_given]
-        @extractor.start = start_time = ts_to_s(@options[:start_time])
-        @extractor.stop = end_time = ts_to_s(@options[:end_time])
         raise Trollop::CommandlineError, "--start cannot be further than --end" if start_time >= end_time
       
         @extractor.fps = @video.framerate_r(2)
@@ -19,8 +18,6 @@ module Storyboard::Runners
       else
         raise Trollop::CommandlineError "only -t for now."
       end
-
-      # EITHER the text from -t
 
       # OR load the subtitle file from -s 
 

@@ -13,13 +13,14 @@ module Storyboard
   autoload :Video,                "storyboard/video"
 
   module Extractor
+    autoload :Base,               "storyboard/extractors/base.rb"
     autoload :Timestamps,         "storyboard/extractors/timestamps.rb"
     autoload :Range,              "storyboard/extractors/range.rb"
   end
 
 
   module Builder
-    autoload :GIF,               "storyboard/builder/gif.rb"
+    autoload :GIF,                "storyboard/builder/gif.rb"
   end
 
   module Subtitles

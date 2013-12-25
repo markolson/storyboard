@@ -11,7 +11,7 @@ module Storyboard::Subtitles
     end
 
     def add_line(start_time, end_time, lines)
-      @subs << {:start => start_time, :end => end_time, :lines => lines, :max_font => max_font_for(lines)}
+      @subs << {:start => start_time, :end => end_time, :lines => lines.join("\\N"), :max_font => max_font_for(lines)}
     end
 
     def write
@@ -23,9 +23,11 @@ module Storyboard::Subtitles
           'Shadow' => 6
         }
       )
-      @parent.post << "-copyts"
-      @parent.filters << "ass=#{@tmpfile.path}"
-      @parent.filters << "setpts=PTS-#{parent.start_time}/TB"
+
+      @parent.extractor.post << "-copyts"
+      @parent.extractor.filters << "ass=#{@tmpfile.path}"
+      @parent.extractor.filters << "setpts=PTS-#{parent.start_time}/TB"
+
       @tmpfile.write(out).size()
       @tmpfile.rewind
     end
@@ -36,17 +38,21 @@ module Storyboard::Subtitles
       @prawn_scratch ||= ::Prawn::Document.new(:page_size => [@parent.video.width, @parent.video.height], :margin => [0,0,0,0] )
       @prawn_scratch.font ::File.join(font_path, "Verdana.ttf")
 
-      ratio = 0
-      bump = 0
-      font_size = 16
-      while ratio < 0.8 && bump < (@prawn_scratch.bounds.height / 3)
-        ratio = @prawn_scratch.width_of(lines, size: font_size, kerning: true) / (@prawn_scratch.bounds.width.to_f)
-        font_size += 1
-        bump = prawn_scratch.height_of(lines, size: font_size, kerning: true)
-      end
+      line_widths = lines.map{ |line|
+        ratio = 0
+        bump = 0
+        font_size = 16
+        while ratio < 0.8 && bump < (@prawn_scratch.bounds.height / 3)
+          ratio = @prawn_scratch.width_of(line, size: font_size, kerning: true) / (@prawn_scratch.bounds.width.to_f)
+          font_size += 1
+          bump = prawn_scratch.height_of(line, size: font_size, kerning: true)
+        end
+        font_size
+      }
 
-      @max_font_size = font_size if font_size > @max_font_size
-      font_size
+
+      @max_font_size = line_widths.min if line_widths.min > @max_font_size
+      line_widths
     end
   end
 end
