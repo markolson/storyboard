@@ -10,10 +10,6 @@ module Storyboard::Subtitles
       @tmpfile = ::Tempfile.new('storyboard')
     end
 
-    def add_line(start_time, end_time, lines)
-      @subs << {:start => start_time, :end => end_time, :lines => lines.join("\\N"), :max_font => max_font_for(lines)}
-    end
-
     def write
       out = Titlekit::ASS.export(@subs, 
         { 'PlayResX' => @parent.video.width, 

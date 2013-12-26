@@ -12,7 +12,7 @@ module Storyboard::Runners
       
         @extractor.fps = @video.framerate_r(2)
 
-        @sub = Storyboard::Subtitles::Base.new(self)
+        @sub = Storyboard::Subtitles::Line.new(self)
         @sub.add_line(start_time, end_time, options[:use_text])
         @sub.write
       else
