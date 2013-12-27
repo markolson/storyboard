@@ -15,9 +15,9 @@ module Storyboard
   module Extractor
     autoload :Base,               "storyboard/extractors/base.rb"
     autoload :Timestamps,         "storyboard/extractors/timestamps.rb"
+    autoload :Interval,           "storyboard/extractors/interval.rb"
     autoload :Range,              "storyboard/extractors/range.rb"
   end
-
 
   module Builder
     autoload :GIF,                "storyboard/builder/gif.rb"

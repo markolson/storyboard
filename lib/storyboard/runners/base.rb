@@ -42,8 +42,8 @@ module Storyboard::Runners
     end
 
     def pull_options!
-      @start_time = ts_to_s(@options[:start_time]) if @options[:start_time_given]
-      @end_time = ts_to_s(@options[:end_time]) if @options[:end_time_given]
+      @start_time = @options[:start_time_given] ? ts_to_s(@options[:start_time]) : 0 
+      @end_time = @options[:end_time_given] ? ts_to_s(@options[:end_time]) : @video.duration
 
       if @options[:dimensions_given]
         width, height = @video.width, nil

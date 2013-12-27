@@ -1,17 +1,19 @@
 module Storyboard::Extractor
   class Range < Storyboard::Extractor::Base
 
-  	attr_accessor :fps
-  	def run
-  		filters << "fps=#{@fps}"
+    attr_accessor :fps
+    def run
+      filters << "fps=#{@fps}"
 
-  		cmd = build_ffmpeg_command(
-  			:pre => ["-ss", Titlekit::ASS.build_timecode(@parent.start_time-1)],
-  			:post => ["-ss", Titlekit::ASS.build_timecode(1), "-to", Titlekit::ASS.build_timecode(@parent.end_time-@parent.start_time)],
-  			:filename => "tmp%04d.jpg"
-  		)
-  		Storyboard::Binaries.ffmpeg(cmd)
-  	end
+      offset = (@parent.start_time > 1) ? 1 : 0
+      
+      cmd = build_ffmpeg_command(
+        :pre => ["-ss", Titlekit::ASS.build_timecode(@parent.start_time-offset)], 
+        :post => ["-ss", Titlekit::ASS.build_timecode(offset), "-to", Titlekit::ASS.build_timecode(@parent.end_time-@parent.start_time)],
+        :filename => "tmp%04d.jpg"
+      )
+      Storyboard::Binaries.ffmpeg(cmd)
+    end
 
     def format
       "tmp*.jpg"

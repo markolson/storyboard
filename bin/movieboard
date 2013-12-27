@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+require 'bundler'
+Bundler.require
+$: << File.expand_path(File.join(__FILE__, "..", ".."))
+
+require 'storyboard'
+require 'trollop'
+
+gif = Trollop::Parser.new do
+  version "Movieboard 0.4.0"
+  banner <<-EOS
+Make you *a* GIFs out of video.
+
+Usage:
+       movieboard [options] VIDEOFILE [output directory]
+
+where [options] are:
+EOS
+end
+
+Storyboard::CLI.options(gif) do |set|
+
+end
+
+Trollop::with_standard_exception_handling gif do
+  o = gif.parse ARGV
+  raise Trollop::HelpNeeded if ARGV.empty? || ARGV.length > 2
+  o
+  Storyboard::Runners::Movie.run(gif, o)
+end
