@@ -5,7 +5,7 @@ module Storyboard::Subtitles
     attr_accessor :prawn_scratch
     def initialize(parent)
       @parent = parent
-      @max_font_size = 16
+      @min_font_sizes = []
       @subs = []
       @tmpfile = ::Tempfile.new('storyboard')
     end
@@ -15,7 +15,7 @@ module Storyboard::Subtitles
         { 'PlayResX' => @parent.video.width, 
           'PlayResY' => @parent.video.height, 
           'FontName' => 'Verdana', 
-          'Fontsize' => @max_font_size, 
+          'Fontsize' => @min_font_sizes.min, 
           'Shadow' => 6
         }
       )
@@ -30,6 +30,7 @@ module Storyboard::Subtitles
 
     private
     def max_font_for(lines)
+      lines = lines.split("\\N").flatten.map{|x| x.split("\n") }.flatten.map{|x| x.split("\r") }.flatten
       font_path = ::File.expand_path(::File.join(__FILE__, "..", "..", "..", "..", "resources", "fonts"))
       @prawn_scratch ||= ::Prawn::Document.new(:page_size => [@parent.video.width, @parent.video.height], :margin => [0,0,0,0] )
       @prawn_scratch.font ::File.join(font_path, "Verdana.ttf")
@@ -37,17 +38,15 @@ module Storyboard::Subtitles
       line_widths = lines.map{ |line|
         ratio = 0
         bump = 0
-        font_size = 16
-        while ratio < 0.8 && bump < (@prawn_scratch.bounds.height / 3)
+        font_size = 20
+        while ratio < 0.9 && bump < (@prawn_scratch.bounds.height / 3)
           ratio = @prawn_scratch.width_of(line, size: font_size, kerning: true) / (@prawn_scratch.bounds.width.to_f)
           font_size += 1
           bump = prawn_scratch.height_of(line, size: font_size, kerning: true)
         end
         font_size
       }
-
-
-      @max_font_size = line_widths.min if line_widths.min > @max_font_size
+      @min_font_sizes << line_widths.min
       line_widths
     end
   end

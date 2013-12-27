@@ -24,7 +24,7 @@ Storyboard::CLI.options(gif) do |set|
   set.opt :use_first_text_match, "Use the first text match", :long => "--use-first-match", :default => false
   set.opt :use_text, "Overlay text", :short => "-t", :long => "--use-text", :type => :string, :multi => true
 
-  set.depends :use_text, :start_time, :end_time
+  #set.depends :use_text, :start_time, :end_time
   
   set.conflicts :find_text, :use_text
   set.conflicts :subtitle_path, :use_text

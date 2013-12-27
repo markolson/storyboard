@@ -6,20 +6,21 @@ module Storyboard::Runners
       
       @extractor = Storyboard::Extractor::Range.new(self)
       pull_options!
+      @extractor.fps = @video.framerate_r(2)
+      @extractor.post += ["-q", 1]
         
       if @options[:use_text_given]
         raise Trollop::CommandlineError, "--start cannot be further than --end" if start_time >= end_time
-      
-        @extractor.fps = @video.framerate_r(2)
-
         @sub = Storyboard::Subtitles::Line.new(self)
         @sub.add_line(start_time, end_time, options[:use_text])
         @sub.write
+      elsif @options[:subtitle_path_given]
+        @sub = Storyboard::Subtitles::File.new(self)
+        @sub.open(@options[:subtitle_path])
+        @sub.write
       else
-        raise Trollop::CommandlineError "only -t for now."
+        raise Trollop::CommandlineError, "only -t for now."
       end
-
-      # OR load the subtitle file from -s 
 
       # OR try to find one to download
 
