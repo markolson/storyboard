@@ -1,9 +1,10 @@
 module Storyboard::Subtitles
   class Base
-    attr_accessor :parent, :subs, :max_font_size, :tmpfile
+    attr_accessor :parent, :subs, :max_font_size, :tmpfile, :encoding
 
     attr_accessor :prawn_scratch
     def initialize(parent)
+      @encoding = 'UTF-8'
       @parent = parent
       @min_font_sizes = []
       @subs = []
@@ -11,6 +12,16 @@ module Storyboard::Subtitles
     end
 
     def write
+      @parent.extractor.post << "-copyts"
+      @parent.extractor.filters << "ass=#{tmpfile.path}"
+      @parent.extractor.filters << "setpts=PTS-#{@parent.start_time}/TB"
+
+      # trim out the fat so that we can set the correct max font size.
+      @subs = @subs.select{|s| 
+        (s[:start] <= parent.end_time) &&  (s[:end] >= parent.start_time)
+      }
+      @subs.each{|l| max_font_for(l[:lines]) }
+
       out = Titlekit::ASS.export(@subs, 
         { 'PlayResX' => @parent.video.width, 
           'PlayResY' => @parent.video.height, 
@@ -19,13 +30,23 @@ module Storyboard::Subtitles
           'Shadow' => 6
         }
       )
-
-      @parent.extractor.post << "-copyts"
-      @parent.extractor.filters << "ass=#{@tmpfile.path}"
-      @parent.extractor.filters << "setpts=PTS-#{parent.start_time}/TB"
-
       @tmpfile.write(out).size()
       @tmpfile.rewind
+    end
+
+    def fix_encoding_of(l)
+      # The only  ISO8859-1  I hit so far. I expec this to grow.
+      if !(l.bytes.to_a | [233,146]).empty? && @encoding == 'UTF-8'
+        l = l.unpack("C*").pack("U*")
+      end
+      l
+    end
+
+    def clean(lines)
+      lines.map{ |line| 
+        line = fix_encoding_of(line)
+        line = line.strip
+      }.join("\n").force_encoding(@encoding).encode(@encoding)
     end
 
     private

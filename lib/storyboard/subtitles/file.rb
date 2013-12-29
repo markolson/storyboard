@@ -1,12 +1,29 @@
 module Storyboard::Subtitles
   class File < Storyboard::Subtitles::Base
 
-    def open(path)
+    def load_subs(path)
       job = Titlekit::Job.new
       input = job.have
-      input.file(path)
-      job.send(:import, input)
+      # re-save the file with a hopefully sane encoding..
 
+      really_temporary_temp = ::Tempfile.new(['storyboard.file', ::File.extname(path)])
+      cleaned_body = clean(::File.read(path).lines)
+
+      really_temporary_temp.write(cleaned_body)
+      really_temporary_temp.rewind.size
+      really_temporary_temp.flush
+
+      Storyboard::Binaries.ffmpeg(["-v", "quiet", "-y", "-i", really_temporary_temp.path, really_temporary_temp.path])
+
+      # and then go
+      input.file(really_temporary_temp)
+      input.encoding 'UTF-8'
+      begin
+        job.send(:import, input)
+      rescue
+        p job.report
+        exit
+      end
 
       output = job.want
       output.file(@tmpfile)
@@ -14,12 +31,11 @@ module Storyboard::Subtitles
 
       Titlekit::ASS.master(output.subtitles)
       job.send(:polish, output)
-
-      # trim out the fat so that we can set the correct max font size.
-      @subs = output.subtitles.select{|s| 
-        (s[:start] <= parent.end_time) &&  (s[:end] >= parent.start_time)
-      }
-      @subs.each{|l| max_font_for(l[:lines]) }
+      @subs = output.subtitles
     end
+
+    private 
+
+
   end
 end
