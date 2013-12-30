@@ -16,7 +16,7 @@ module Storyboard
       types.each {|filter|
         pre = @subtitles.count
         @subtitles = filter.run(self, runner)
-        runner.ui.log("#{filter} caused a diff of #{pre - @subtitles.count}")
+        runner.ui.log("#{filter} removed #{pre - @subtitles.count} subtitles, leaving #{@subtitles.count}")
       }
     end
 
@@ -33,7 +33,7 @@ module Storyboard
           'Shadow' => 6
         }
       )
-      p out
+
       @subtitle_file.write(out).size()
       @subtitle_file.rewind
     end
@@ -44,7 +44,7 @@ module Storyboard
 
     def load_from_file(path)
       cleaned_file = clean_with_ffmpeg(path)
-      runner.ui.log("Starting loading subtitle file")
+      runner.ui.log("Loading subtitles")
 
       job = Titlekit::Job.new
       input = job.have
@@ -64,11 +64,11 @@ module Storyboard
       Titlekit::ASS.master(output.subtitles)
       job.send(:polish, output)
       @subtitles = output.subtitles
-      runner.ui.log("Done loading subtitle file")
+      runner.ui.log("Subtitle loading completed")
     end
 
     def clean_with_ffmpeg(path)
-      runner.ui.log("Cleaning subtitle file before loading")
+      runner.ui.log("Cleaning subtitles")
       really_temporary_temp = ::Tempfile.new(['storyboard.file', ::File.extname(path)])
       cleaned_body = clean_lines(::File.read(path).lines).join("\n")
 

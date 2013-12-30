@@ -12,11 +12,13 @@ module Storyboard::Subtitles::Filter
         # set the start/end time
         chosen = found
       elsif found.count > 1
-        answer = 1 || runner.ui.pick("Multiple matches were found. Please choose one.")
+        options = found.map { |s|
+          [Titlekit::ASS.build_timecode(s[:start]), Titlekit::ASS.build_timecode(s[:end]), s[:lines]]
+        }
+        answer = runner.ui.pick("Multiple matches were found. Please choose one.", options)
         # return the best match (levenshein?) if the use_closest_text_match
         chosen = [found[answer]]
       end
-      p chosen
       runner.start_time = chosen[0][:start]
       runner.end_time = chosen[0][:end]
       chosen

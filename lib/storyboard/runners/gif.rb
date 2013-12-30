@@ -32,7 +32,7 @@ module Storyboard::Runners
         Storyboard::Subtitles::Source::Text,
         Storyboard::Subtitles::Source::Path,
         Storyboard::Subtitles::Source::Local,
-        #Storyboard::Subtitles::Source::OSDb,
+        Storyboard::Subtitles::Source::Web,
       ]
 
       if @subtitles.load_from(load_from)
@@ -78,9 +78,9 @@ module Storyboard::Runners
 
       # search based on the -f flag
 =end
-      ui.log("Building frames")
+      ui.log("Building frames", Logger::INFO)
       @extractor.run
-      ui.log("Outputting GIF")
+      ui.log("Outputting GIF", Logger::INFO)
       @gif = Storyboard::Builder::GIF.new(self).run(@extractor.format)
     end
 
