@@ -13,17 +13,17 @@ module Storyboard
     end
 
     def filter(types)
-      p types
+      types.each {|filter|
+        pre = @subtitles.count
+        @subtitles = filter.run(self, runner)
+        runner.ui.log("#{filter} caused a diff of #{pre - @subtitles.count}")
+      }
     end
 
     def write
       runner.extractor.filters << "ass=#{@subtitle_file.path}"
 
       clean_subtitles
-
-      @subtitles = @subtitles.select{|s| 
-        (s[:start] <= runner.end_time) &&  (s[:end] >= runner.start_time)
-      }
 
       out = Titlekit::ASS.export(@subtitles, 
         { 'PlayResX' => @runner.video.width, 
@@ -33,6 +33,7 @@ module Storyboard
           'Shadow' => 6
         }
       )
+      p out
       @subtitle_file.write(out).size()
       @subtitle_file.rewind
     end
@@ -74,7 +75,6 @@ module Storyboard
       really_temporary_temp.write(cleaned_body)
       really_temporary_temp.rewind.size
       really_temporary_temp.flush
-
       Storyboard::Binaries.ffmpeg(["-v", "quiet", "-y", "-i", really_temporary_temp.path, really_temporary_temp.path])
       really_temporary_temp.path
     end
@@ -85,7 +85,7 @@ module Storyboard
     end
 
     def clean_line(text)
-      if !(text.bytes.to_a | [233,146]).empty? && @encoding == 'UTF-8'
+      if !(text.bytes.to_a & [233,146]).empty? && @encoding == 'UTF-8'
         text = text.unpack("C*").pack("U*")
       end
       text = text.strip
