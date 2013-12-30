@@ -7,9 +7,12 @@ module Storyboard::Extractor
   	def initialize(parent)
   		@parent = parent
       @pre, @post, @filters = [], [], []
+
+      @filters << "scale=#{@parent.width}:#{@parent.height || -1}"
   	end
 
     def build_ffmpeg_command(params={})
+
       parts =  ["-v", "quiet", "-y"]
       #parts =  ["-y"]
       parts += (params[:pre] || []) + @pre

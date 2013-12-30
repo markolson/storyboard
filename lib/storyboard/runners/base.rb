@@ -3,7 +3,7 @@ module Storyboard::Runners
     attr_reader :ui, :options, :parser, :workdirectory
 
     attr_reader :video, :subtitles, :extractor
-    attr_reader :start_time, :end_time
+    attr_reader :start_time, :end_time, :height, :width
 
     def self.run(parser, options, ui=Storyboard::UI::Console)
       Storyboard::Binaries.check
@@ -46,13 +46,12 @@ module Storyboard::Runners
       @end_time = @options[:end_time_given] ? ts_to_s(@options[:end_time]) : @video.duration
 
       if @options[:dimensions_given]
-        width, height = @video.width, nil
+        @width, @height = @video.width, nil
         if @options[:dimensions].end_with?('%')
-          width = (@options[:dimensions].to_i / 100.to_f) * @video.width
+          @width = (@options[:dimensions].to_i / 100.to_f) * @video.width
         else
-          width, height = @options[:dimensions].split('x')
+          @width, @height = @options[:dimensions].split('x')
         end
-        @extractor.filters << "scale=#{width}:#{height || -1}"
       end
     end
 

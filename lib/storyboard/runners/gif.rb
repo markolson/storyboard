@@ -3,9 +3,9 @@ module Storyboard::Runners
     def run
       # do secondary checks.
       raise Trollop::CommandlineError, "--use_first_text_match requires --find-text" if @options[:use_first_text_match] && @options[:find_text].nil?
-      
-      @extractor = Storyboard::Extractor::Range.new(self)
       pull_options!
+      @extractor = Storyboard::Extractor::Range.new(self)
+      
       @extractor.fps = @video.framerate_r(2)
       @extractor.post += ["-q", 1]
       
@@ -27,15 +27,26 @@ module Storyboard::Runners
 
       ui.log("Checking for subtitles")
       @subtitles = Storyboard::Subtitles.new(self)
+
       load_from = [
         Storyboard::Subtitles::Source::Text,
         Storyboard::Subtitles::Source::Path,
         Storyboard::Subtitles::Source::Local,
         #Storyboard::Subtitles::Source::OSDb,
       ]
-      @subtitles.load_from(load_from)
 
-      @subtitles.write
+      if @subtitles.load_from(load_from)
+
+        filters = [
+          #Storyboard::Subtitles::Filter::Time,
+          #Storyboard::Subtitles::Filter::Text,
+        ]
+
+        @subtitles.filter(filters)
+        @subtitles.write
+      end
+
+
 =begin
       #@subtitles = @subtitles.apply(Storyboard::Subtitles::FindText) if @options[:find_text]
 

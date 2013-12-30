@@ -16,9 +16,7 @@ module Storyboard::Subtitles
     end
 
     def write
-      @parent.extractor.post << "-copyts"
       @parent.extractor.filters << "ass=#{tmpfile.path}"
-      @parent.extractor.filters << "setpts=PTS-#{@parent.start_time}/TB"
 
       # trim out the fat so that we can set the correct max font size.
       @subs = @subs.select{|s| 
@@ -38,6 +36,20 @@ module Storyboard::Subtitles
       @tmpfile.rewind
     end
 
+
+    def clean_with_ffmpeg(path)
+      really_temporary_temp = ::Tempfile.new(['storyboard.file', ::File.extname(path)])
+      cleaned_body = clean(::File.read(path).lines)
+
+      really_temporary_temp.write(cleaned_body)
+      really_temporary_temp.rewind.size
+      really_temporary_temp.flush
+
+      Storyboard::Binaries.ffmpeg(["-v", "quiet", "-y", "-i", really_temporary_temp.path, really_temporary_temp.path])
+      really_temporary_temp.path
+    end
+
+    private
     def fix_encoding_of(l)
       # The only  ISO8859-1  I hit so far. I expec this to grow.
       if !(l.bytes.to_a | [233,146]).empty? && @encoding == 'UTF-8'
@@ -53,7 +65,6 @@ module Storyboard::Subtitles
       }.join("\n").force_encoding(@encoding).encode(@encoding)
     end
 
-    private
     def max_font_for(lines)
       lines = lines.split("\\N").flatten.map{|x| x.split("\n") }.flatten.map{|x| x.split("\r") }.flatten
       font_path = ::File.expand_path(::File.join(__FILE__, "..", "..", "..", "..", "resources", "fonts"))

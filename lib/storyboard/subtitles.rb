@@ -12,12 +12,18 @@ module Storyboard
       types.detect {|loader| loader.run(self, runner) }
     end
 
+    def filter(types)
+      p types
+    end
+
     def write
-      runner.extractor.post << "-copyts"
       runner.extractor.filters << "ass=#{@subtitle_file.path}"
-      runner.extractor.filters << "setpts=PTS-#{runner.start_time}/TB"
 
       clean_subtitles
+
+      @subtitles = @subtitles.select{|s| 
+        (s[:start] <= runner.end_time) &&  (s[:end] >= runner.start_time)
+      }
 
       out = Titlekit::ASS.export(@subtitles, 
         { 'PlayResX' => @runner.video.width, 
@@ -35,20 +41,61 @@ module Storyboard
       @subtitles << {:start => start_time, :end => end_time, :lines => lines.join("\\N") }
     end
 
-    def load_file(path)
+    def load_from_file(path)
+      cleaned_file = clean_with_ffmpeg(path)
+      runner.ui.log("Starting loading subtitle file")
 
+      job = Titlekit::Job.new
+      input = job.have
+      input.encoding(@encoding)
+      input.file(cleaned_file)
+      begin
+        job.send(:import, input)
+      rescue
+        p job.report
+        exit
+      end
+
+      output = job.want
+      output.file(@tmpfile)
+      output.subtitles =  input.subtitles.clone
+
+      Titlekit::ASS.master(output.subtitles)
+      job.send(:polish, output)
+      @subtitles = output.subtitles
+      runner.ui.log("Done loading subtitle file")
+    end
+
+    def clean_with_ffmpeg(path)
+      runner.ui.log("Cleaning subtitle file before loading")
+      really_temporary_temp = ::Tempfile.new(['storyboard.file', ::File.extname(path)])
+      cleaned_body = clean_lines(::File.read(path).lines).join("\n")
+
+      really_temporary_temp.write(cleaned_body)
+      really_temporary_temp.rewind.size
+      really_temporary_temp.flush
+
+      Storyboard::Binaries.ffmpeg(["-v", "quiet", "-y", "-i", really_temporary_temp.path, really_temporary_temp.path])
+      really_temporary_temp.path
     end
 
     private
+    def clean_lines(lines)
+      lines.map{|line| clean_line(line) }
+    end
+
+    def clean_line(text)
+      if !(text.bytes.to_a | [233,146]).empty? && @encoding == 'UTF-8'
+        text = text.unpack("C*").pack("U*")
+      end
+      text = text.strip
+      text.force_encoding(@encoding).encode(@encoding)
+      text
+    end
+
     def clean_subtitles
      @subtitles.map{ |line| 
-        text = line[:lines]
-        if !(text.bytes.to_a | [233,146]).empty? && @encoding == 'UTF-8'
-          text = text.unpack("C*").pack("U*")
-        end
-        text = text.strip
-        text.force_encoding(@encoding).encode(@encoding)
-        line[:lines] = text
+        line[:lines] = clean_line(line[:lines])
       }
     end
 
