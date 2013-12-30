@@ -23,11 +23,14 @@ module Storyboard
     autoload :GIF,                "storyboard/builder/gif.rb"
   end
 
-  module Subtitles
-    autoload :Base,               "storyboard/subtitles/base.rb"
-    autoload :Line,               "storyboard/subtitles/line.rb"
-    autoload :File,               "storyboard/subtitles/file.rb"
-    autoload :Web,                "storyboard/subtitles/web.rb"
+  autoload :Subtitles,            "storyboard/subtitles.rb"
+  class Subtitles
+    module Source
+      autoload :Text,             "storyboard/subtitles/sources/text.rb"
+      autoload :Local,            "storyboard/subtitles/sources/local.rb"
+      autoload :Path,             "storyboard/subtitles/sources/path.rb"
+    end
+
   end
 
   module Runners

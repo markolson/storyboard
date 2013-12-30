@@ -25,9 +25,25 @@ module Storyboard::Runners
   s.commit (?)
 =end
 
+      ui.log("Checking for subtitles")
+      @subtitles = Storyboard::Subtitles.new(self)
+      load_from = [
+        Storyboard::Subtitles::Source::Text,
+        Storyboard::Subtitles::Source::Path,
+        Storyboard::Subtitles::Source::Local,
+        #Storyboard::Subtitles::Source::OSDb,
+      ]
+      @subtitles.load_from(load_from)
+
+      @subtitles.write
+=begin
+      #@subtitles = @subtitles.apply(Storyboard::Subtitles::FindText) if @options[:find_text]
+
+      #exit
+
       if @options[:use_text_given]
         raise Trollop::CommandlineError, "--start cannot be further than --end" if start_time >= end_time
-        @sub = Storyboard::Subtitles::Line.new(self)
+        @sub = Storyboard::Subtitles::Base.new(self)
         @sub.add_line(start_time, end_time, options[:use_text])
       elsif @options[:subtitle_path_given]
         @sub = Storyboard::Subtitles::File.new(self)
@@ -50,10 +66,10 @@ module Storyboard::Runners
       @sub.write if @sub
 
       # search based on the -f flag
-
-
+=end
+      ui.log("Building frames")
       @extractor.run
-
+      ui.log("Outputting GIF")
       @gif = Storyboard::Builder::GIF.new(self).run(@extractor.format)
     end
 

@@ -20,6 +20,7 @@ module Storyboard::Subtitles
 			subtitle_finder = OSDb::SubtitleFinder.new(search_engines, finders, selectors)
 			
 			found = subtitle_finder.find_sub_for(osdb, 'eng')
+			p found
 
 			really_temporary_temp = ::Tempfile.new(['storyboard.web', ".#{found.format}"])
 

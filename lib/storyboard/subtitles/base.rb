@@ -11,6 +11,10 @@ module Storyboard::Subtitles
       @tmpfile = ::Tempfile.new('storyboard')
     end
 
+    def add_line(start_time, end_time, lines)
+      @subs << {:start => start_time, :end => end_time, :lines => lines.join("\\N"), :max_font => max_font_for(lines.join("\\N"))}
+    end
+
     def write
       @parent.extractor.post << "-copyts"
       @parent.extractor.filters << "ass=#{tmpfile.path}"

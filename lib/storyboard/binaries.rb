@@ -13,7 +13,6 @@ module Storyboard
     }
 
     def self.ffmpeg(args)
-      print "FONTCONFIG_PATH=./resources/fonts/ "  + Shellwords.join([@@ffmpeg, *args]) +"\n"
       %x(FONTCONFIG_PATH=./resources/fonts/ #{Shellwords.join([@@ffmpeg, *args])})
     end
 
@@ -22,7 +21,6 @@ module Storyboard
     end
 
     def self.convert(*args)
-      print Shellwords.join([@@convert, *args]) +"\n"
       %x(#{Shellwords.join([@@convert, *args])})
     end
 
