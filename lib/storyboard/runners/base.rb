@@ -3,7 +3,8 @@ module Storyboard::Runners
     attr_reader :ui, :options, :parser, :workdirectory
 
     attr_reader :video, :subtitles, :extractor
-    attr_reader :start_time, :end_time, :height, :width
+    attr_accessor :start_time, :end_time
+    attr_reader :height, :width
 
     def self.run(parser, options, ui=Storyboard::UI::Console)
       Storyboard::Binaries.check

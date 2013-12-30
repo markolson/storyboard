@@ -30,6 +30,10 @@ module Storyboard
       autoload :Local,            "storyboard/subtitles/sources/local.rb"
       autoload :Path,             "storyboard/subtitles/sources/path.rb"
     end
+    module Filter
+      autoload :Text,             "storyboard/subtitles/filters/text.rb"
+      autoload :Time,             "storyboard/subtitles/filters/time.rb"
+    end
 
   end
 
