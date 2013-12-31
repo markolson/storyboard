@@ -18,10 +18,8 @@ module Storyboard::Subtitles
     def write
       @parent.extractor.filters << "ass=#{tmpfile.path}"
 
-      # trim out the fat so that we can set the correct max font size.
-      @subs = @subs.select{|s| 
-        (s[:start] <= parent.end_time) &&  (s[:end] >= parent.start_time)
-      }
+      # TODO: Find 'long' lines and split them halfway-ish.
+
       @subs.each{|l| max_font_for(l[:lines]) }
 
       out = Titlekit::ASS.export(@subs, 

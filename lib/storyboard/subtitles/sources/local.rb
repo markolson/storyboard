@@ -7,7 +7,7 @@ module Storyboard::Subtitles::Source
   		return false unless subtitle_extension
 
   		subtitle_path = path.gsub(File.extname(path), ".#{subtitle_extension}")
-  		runner.ui.log(HighLine.color("Adding subtitles from Source::Local: #{subtitle_path}", Logger::INFO)
+  		runner.ui.log("Adding subtitles from Source::Local: #{subtitle_path}", Logger::INFO)
   		subtitles.load_from_file(subtitle_path)
   		return true
   	end

@@ -29,6 +29,7 @@ module Storyboard
       autoload :Text,             "storyboard/subtitles/sources/text.rb"
       autoload :Local,            "storyboard/subtitles/sources/local.rb"
       autoload :Path,             "storyboard/subtitles/sources/path.rb"
+      autoload :Web,              "storyboard/subtitles/sources/web.rb"
     end
     module Filter
       autoload :Text,             "storyboard/subtitles/filters/text.rb"

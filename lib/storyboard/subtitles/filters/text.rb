@@ -8,7 +8,9 @@ module Storyboard::Subtitles::Filter
       }
 
       chosen = nil
-      if found.count == 1
+      if found.empty?
+        raise Trollop::CommandlineError, "No matches found for text: #{runner.options[:find_text]}"
+      elsif found.count == 1
         # set the start/end time
         chosen = found
       elsif found.count > 1

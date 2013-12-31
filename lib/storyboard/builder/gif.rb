@@ -7,7 +7,7 @@ module Storyboard::Builder
 
     def run(scanfor='*.jpg')
       scanpath = File.join(@parent.workdirectory, scanfor)
-      writepath = File.join(@parent.options['_output_director'], "a.gif")
+      writepath = File.join(@parent.options['_output_director'], "#{File.basename(@parent.video.path)}.gif")
       delay = 12
       Storyboard::Binaries.convert("-layers", "OptimizeTransparency", "+map", "-coalesce", scanpath, writepath)
     end
