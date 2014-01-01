@@ -6,6 +6,7 @@ module Storyboard::Builder
     end
 
     def run(scanfor='*.jpg')
+      parent.ui.log("Outputting GIF", Logger::INFO)
       scanpath = File.join(@parent.workdirectory, scanfor)
       writepath = File.join(@parent.options['_output_director'], "#{File.basename(@parent.video.path)}.gif")
       delay = 12

@@ -34,7 +34,6 @@ module Storyboard::Runners
 
       ui.log("Building frames", Logger::INFO)
       @extractor.run
-      ui.log("Outputting GIF", Logger::INFO)
       @gif = Storyboard::Builder::GIF.new(self).run(@extractor.format)
     end
 

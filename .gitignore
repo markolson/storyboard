@@ -1,6 +1,9 @@
 binaries/
 *.gem
 *.gif
+*.pdf
+*.epub
+*.mobi
 *.rbc
 .bundle
 .config

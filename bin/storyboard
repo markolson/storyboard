@@ -24,10 +24,9 @@ Storyboard::CLI.options(book) do |set|
   set.opt :format, "Output format", :short => '-f', :long => '--format', :type => :strings, :default => ['pdf', 'epub']
 end
 
-opts = Trollop::with_standard_exception_handling book do
+Trollop::with_standard_exception_handling book do
   o = book.parse ARGV
-  raise Trollop::HelpNeeded if ARGV.empty?
+  raise Trollop::HelpNeeded if ARGV.empty? || ARGV.length > 2
   o
+  Storyboard::Runners::Book.run(book, o)
 end
-
-p opts

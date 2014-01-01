@@ -16,6 +16,12 @@ module Storyboard::UI
       @logger.add(level) { "#{parent.name}> #{msg}" }
     end
 
+    def progress(name, max_value, &block) 
+      pbar = ProgressBar.create(:title => "  #{name}", :format => '%t [%B] %e', :total => max_value, :smoothing => 0.6, :throttle_rate => 0.1)
+      yield(pbar)
+      pbar.finish
+    end
+
     def pick(question, options)
       options = options.map.with_index { |o,i|
           formatted = HighLine.color(o[2].lines.join("\t"), HighLine::BOLD_STYLE)

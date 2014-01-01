@@ -33,14 +33,15 @@ module Storyboard::Runners
       raise NotImplementedError
     end
 
-    private
     def ts_to_s(timecode)
       tot = 0
       sixes, ms = timecode.split('.')
       times = sixes.split(':').map(&:to_i).reverse.each_with_index{|v,i| tot += (60**i) * v }
-      tot += (ms.to_i / 100.0)
+      ms = ms[/\d{1,3}/].ljust(3, "0")
+      tot += (ms.to_i / 1000.0)
       tot
     end
+    private
 
     def pull_options!
       @start_time = @options[:start_time_given] ? ts_to_s(@options[:start_time]) : 0 
@@ -53,6 +54,8 @@ module Storyboard::Runners
         else
           @width, @height = @options[:dimensions].split('x')
         end
+      else
+        @width, @height = @video.width, @video.height
       end
     end
 
