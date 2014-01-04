@@ -13,7 +13,14 @@ module Storyboard::Extractor
         :post => ["-ss", Titlekit::ASS.build_timecode(offset), "-to", Titlekit::ASS.build_timecode(@runner.end_time-@runner.start_time), "-copyts"],
         :filename => "tmp%04d.jpg"
       )
-      Storyboard::Binaries.ffmpeg(cmd)
+      runner.ui.progress("Extracting images", 250) do |bar|
+        Open3.popen3(Storyboard::Binaries.ffmpeg_cmd(cmd)) {|stdin, stdout, stderr, wait_thr|
+          begin
+            bar.progress = match[1].to_i if match = stderr.read_nonblock(1024).match(/frame\=\s+(\d+)/)
+          rescue
+          end while !stderr.eof?
+        }
+      end
     end
 
     def format

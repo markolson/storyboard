@@ -24,8 +24,8 @@ module Storyboard::Runners
       if @subtitles.load_from(load_from)
 
         filters = [
-          Storyboard::Subtitles::Filter::Text,
           Storyboard::Subtitles::Filter::Time,
+          Storyboard::Subtitles::Filter::Text,
         ]
 
         @subtitles.filter(filters)

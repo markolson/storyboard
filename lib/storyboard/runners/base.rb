@@ -47,16 +47,21 @@ module Storyboard::Runners
       @start_time = @options[:start_time_given] ? ts_to_s(@options[:start_time]) : 0 
       @end_time = @options[:end_time_given] ? ts_to_s(@options[:end_time]) : @video.duration
 
+      @width, @height = @video.width, nil
+
       if @options[:dimensions_given]
-        @width, @height = @video.width, nil
         if @options[:dimensions].end_with?('%')
           @width = (@options[:dimensions].to_i / 100.to_f) * @video.width
         else
           @width, @height = @options[:dimensions].split('x')
         end
       else
-        @width, @height = @video.width, @video.height
       end
+
+      @width = @width.to_f
+      ratio = @video.height/@video.width.to_f 
+      @height = (@width.to_i * ratio).round unless @height
+      p @width, @height, ratio
     end
 
     def extract_path_arguments!

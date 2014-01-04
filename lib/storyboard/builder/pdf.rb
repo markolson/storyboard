@@ -13,7 +13,7 @@ module Storyboard::Builder
       images = Dir[scanpath].sort
       parent.ui.progress("Generating PDF", images.count) do |bar|
         images.each_with_index {|image_path, i|
-          @pdf.image image_path
+          @pdf.image(image_path)
           bar.progress = i
         }
       end

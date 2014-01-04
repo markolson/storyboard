@@ -14,7 +14,11 @@ module Storyboard
 
     def self.ffmpeg(args)
       #print Shellwords.join([@@ffmpeg, *args]) + "\n"
-      %x(FONTCONFIG_PATH=./resources/fonts/ #{Shellwords.join([@@ffmpeg, *args])})
+      %x(#{self.ffmpeg_cmd(args)})
+    end
+
+    def self.ffmpeg_cmd(args)
+      "FONTCONFIG_PATH=./resources/fonts/ #{Shellwords.join([@@ffmpeg, *args])}"
     end
 
     def self.ffprobe(*args)

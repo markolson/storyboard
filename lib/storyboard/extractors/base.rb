@@ -1,3 +1,4 @@
+require 'open3'
 module Storyboard::Extractor
   class Base
   	attr_accessor :runner
@@ -14,8 +15,8 @@ module Storyboard::Extractor
     def build_ffmpeg_command(params={})
       extra_filters = params[:filters] || []
 
-      parts =  ["-v", "quiet", "-y"]
-      #parts =  ["-y"]
+      #parts =  ["-v", "quiet", "-y"]
+      parts =  ["-y"]
       parts += (params[:pre] || []) + @pre
       parts += ["-i", @runner.video.path]
       parts += ["-an", "-vf", (@filters | extra_filters).join(',')]

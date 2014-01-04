@@ -1,4 +1,4 @@
-require 'open3'
+
 module Storyboard::Extractor
   class Points < Storyboard::Extractor::Base
 
@@ -16,7 +16,7 @@ module Storyboard::Extractor
           img_name = "tmp%06d.jpg" % [i]
           offset = (pt > 1) ? 1 : 0
           cmd = build_ffmpeg_command(
-            :pre => ["-ss", Titlekit::ASS.build_timecode(pt-offset)], 
+            :pre => ["-v", "quiet", "-ss", Titlekit::ASS.build_timecode(pt-offset)], 
             :post => ["-ss", Titlekit::ASS.build_timecode(offset), "-vframes", "1", "-copyts"],
             :filters => ["setpts=PTS-#{pt}/TB"],
             :filename => img_name
