@@ -13,7 +13,6 @@ module Storyboard
     }
 
     def self.ffmpeg(args)
-      #print Shellwords.join([@@ffmpeg, *args]) + "\n"
       %x(#{self.ffmpeg_cmd(args)})
     end
 
