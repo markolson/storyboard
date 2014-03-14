@@ -28,7 +28,14 @@ module Storyboard::Extractor
     end
 
     def raw_points
-      (@sub_points + @extracted_points).sort
+      full_list = (@sub_points + @extracted_points).sort
+      o = full_list.dup
+      last_time = -1
+      full_list.delete_if {|a|  
+        del = a - last_time < 0.4
+        last_time = a
+        del
+      }
     end
 
 
