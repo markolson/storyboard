@@ -10,6 +10,7 @@ module Storyboard::Subtitles::Source
 	    ) 
 
 			search_engines = [OSDb::Search::MovieHash, OSDb::Search::IMDB, OSDb::Search::Name, OSDb::Search::Path].map{|se|
+			#search_engines = [OSDb::Search::MovieHash].map{|se|
 				se.new(server)
 			}
 			finders = [OSDb::Finder::Score.new]

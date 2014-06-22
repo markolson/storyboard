@@ -112,12 +112,14 @@ module Storyboard
       @prawn_scratch.font ::File.join(font_path, "Verdana.ttf")
 
       line_widths = lines.map{ |line|
-        ratio = 0
-        bump = 0
+        ratio, width = 0,0
+        bump = 1
         font_size = 20
-        while ratio < 0.9 && bump < (@prawn_scratch.bounds.height / 3)
-          ratio = @prawn_scratch.width_of(line, size: font_size, kerning: true) / (@prawn_scratch.bounds.width.to_f)
+        while ((width / line.length) * ratio) < 20 && ratio < 0.9 && bump < (@prawn_scratch.bounds.height / 3.5)
+          width = @prawn_scratch.width_of(line, size: font_size, kerning: true)
+          ratio = width / (@prawn_scratch.bounds.width.to_f)
           font_size += 1
+          #p "#{line} (#{line.length}) | #{font_size}px | #{per_letter} #{ratio} #{per_letter * ratio} #{bump / per_letter} "
           bump = @prawn_scratch.height_of(line, size: font_size, kerning: true)
         end
         font_size
