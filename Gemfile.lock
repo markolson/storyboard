@@ -1,0 +1,86 @@
+GIT
+  remote: https://github.com/markolson/titlekit.git
+  revision: 2cd2b31f67a89f0556dc75998f68a686ff713acb
+  specs:
+    titlekit (1.2.0)
+      rchardet19
+      treetop
+
+PATH
+  remote: .
+  specs:
+    storyboard (0.0.1)
+      highline
+      micro-optparse
+      prawn
+      titlekit
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addic7ed (0.3.2)
+      nokogiri
+    diff-lcs (1.2.5)
+    highline (1.6.21)
+    hpricot (0.8.6)
+    micro-optparse (1.2.0)
+    mime-types (1.25.1)
+    mini_portile (0.6.0)
+    multipart-post (2.0.0)
+    nokogiri (1.6.2.1)
+      mini_portile (= 0.6.0)
+    osdb (0.1.3)
+    path (1.3.3)
+    pdf-core (0.2.5)
+    polyglot (0.3.5)
+    prawn (1.1.0)
+      pdf-core (~> 0.2.5)
+      ttfunk (~> 1.2.0)
+    rake (10.3.2)
+    rchardet19 (1.3.7)
+    rspec (3.0.0)
+      rspec-core (~> 3.0.0)
+      rspec-expectations (~> 3.0.0)
+      rspec-mocks (~> 3.0.0)
+    rspec-core (3.0.2)
+      rspec-support (~> 3.0.0)
+    rspec-expectations (3.0.2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.0.0)
+    rspec-mocks (3.0.2)
+      rspec-support (~> 3.0.0)
+    rspec-support (3.0.2)
+    ruby-progressbar (1.5.1)
+    rubyzip (1.1.6)
+    subdb (0.1.6)
+      multipart-post (>= 1.1.0)
+    subtitle_it (1.9.0)
+    suby (0.4.4)
+      mime-types (~> 1.19)
+      nokogiri (~> 1.6)
+      path (~> 1.3)
+      rubyzip (~> 1.1)
+      term-ansicolor (~> 1.2)
+    term-ansicolor (1.3.0)
+      tins (~> 1.0)
+    tins (1.3.0)
+    treetop (1.5.3)
+      polyglot (~> 0.3)
+    ttfunk (1.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  addic7ed
+  bundler (~> 1.3)
+  hpricot
+  osdb
+  rake
+  rspec
+  ruby-progressbar
+  storyboard!
+  subdb
+  subtitle_it
+  suby
+  titlekit!

@@ -1,8 +1,7 @@
-ruby '2.1.2'
 source 'https://rubygems.org'
 
 # Specify your gem's dependencies in storyboard.gemspec
-gem 'titlekit', path: '~/Code/titlekit'
+gem 'titlekit', git: 'https://github.com/markolson/titlekit.git'
 gem 'ruby-progressbar'
 gem 'hpricot'
 gem 'subdb'
